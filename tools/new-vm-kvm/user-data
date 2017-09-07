@@ -1,0 +1,23 @@
+#cloud-config
+disable_root: false
+manage_etc_hosts: true
+chpasswd:
+  list: |
+    root:vcpevcpe
+    ubuntu:ubuntu
+  expire: False
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC3wRUuK6ERX95weVguO3Gdu3H26azevhoooYumMEN4rLswzdjjjJTZV86N4cMYIGXToyYiLr+P+otN5R7kLg/VYeMZXTxTnA4XE0rOF80BKSEiAvtFuVNs65kkCOoMoLlK4ec2L9TuT6SDGT5uwsLtKM0pi9jpvBCmMl7iSfGWibJQzTSxle0sbuknMUNWan1lDgt1Nie+gP1RheP4wCD3tR97fJDxzCc5mqGpNTfrOcyO6so5l83EKHkx7tQnNT1KGFJ4BrMvSRhitQyZfmVkLJoG2Ky6wo6lhcAhc3PTcSk3iTNlSwsrFopmMVWVqmnowhy3OxgeAug8qla4caP/ nfv10@n1-mano-host
+ssh_pwauth: True
+final_message: "The system is finally up, after $UPTIME seconds"
+fqdn: appformix.vcpe.pslab.juniper.net
+groups:
+  - cloud-users
+runcmd:
+  - sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+  - service ssh restart
+  - sed -i 's/127.0.1.1/10.13.132.62/g' /etc/hosts
+power_state:
+  mode: reboot
+  timeout: 120
+
