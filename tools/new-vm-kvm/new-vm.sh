@@ -1,11 +1,24 @@
 #!/bin/bash
 
+# sed -i 's/10.13.132.62/10.13.132.197/' user-data
+# sed -i 's/10.13.132.62/10.13.132.197/' meta-data
+# sed -i 's/appformix/i-contrail-analytics-vm/' user-data
+# sed -i 's/appformix/i-contrail-analytics-vm/' meta-data
+# sed -i 's/appformix/i-contrail-analytics-vm/' new-vm.sh
+
+# update ssh_authorized_keys in user-data
+
+# sed -i 's/eth0/ens3/' meta-data
+# /etc/qemu-kvm/bridge.conf needs to have bridges to use (ex, br-ex)
+
 set -x
 
 VM_NAME=appformix
 VCPUS=8
 RAMSIZE=16000
 DISKSIZE=100G
+BRIDGE1=br-ex
+BRIDGE2=br-ctlplane
 
 virsh destroy $VM_NAME
 virsh undefine $VM_NAME --remove-all-storage
@@ -23,7 +36,8 @@ virt-install \
 --vcpu $VCPUS \
 --ram $RAMSIZE \
 --disk $VM_NAME.qcow2,format=qcow2 \
---network bridge=br0 \
+--network bridge=$BRIDGE1 \
+--network bridge=$BRIDGE2 \
 --graphics vnc,listen=0.0.0.0 \
 --noautoconsole \
 --os-type=linux \
