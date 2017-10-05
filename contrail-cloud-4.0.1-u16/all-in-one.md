@@ -1,4 +1,47 @@
 
+## proxy
+in /etc/bash.bashrc
+http_proxy=
+https_proxy=
+ALL_PROXY=
+HTTP_PROXY=
+HTTPS_PROXY=
+FTP_PROXY=
+NO_PROXY=sm-ip,controller-ip,compute-ip
+
+## small disk
+ubuntu@i-contrail-analytics-vm:~$ docker exec -it analyticsdb bash
+root@i-contrail-analytics-vm(analyticsdb):/# grep mini /etc/contrail/contrail-database-nodemgr.conf
+minimum_diskGB = 56
+
+## rabbitmq ctrl
+one of below
+- manage_etc_hosts: false in user-data
+- /etc/cloud/cloud.cfg:# - update_etc_hosts
+- rc.local
+
+## nested
+
+### in host
+/etc/modprobe.d/kvm_intel.conf:options kvm_intel nested=1
+
+add flag from virt-install
+--cpu host
+
+
+### in VM
+
+virt-host-validate
+
+/etc/modprobe.d/qemu-system-x86.conf:options kvm_intel nested=1
+/etc/nova/nova.conf:libvirt_cpu_mode = host-passthrough
+/etc/nova/nova-compute.conf:virt_type=qemu
+
+
+
+
+
+
 from sm
 
 ubuntu@i-regional-ms-vm:~$ ftp 10.13.132.6

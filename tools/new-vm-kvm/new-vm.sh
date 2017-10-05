@@ -43,6 +43,7 @@ virt-install \
 --os-type=linux \
 --os-variant=ubuntu14.04 \
 --import \
+--cpu host \
 --disk path=init.iso,device=cdrom
 
 
