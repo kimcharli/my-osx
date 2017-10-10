@@ -1,6 +1,6 @@
 #cloud-config
 disable_root: false
-manage_etc_hosts: true
+manage_etc_hosts: false
 chpasswd:
   list: |
     root:vcpevcpe
@@ -13,15 +13,9 @@ final_message: "The system is finally up, after $UPTIME seconds"
 fqdn: appformix.vcpe.pslab.juniper.net
 groups:
   - cloud-users
-ntp:
-#  pools: [0.int.pool.ntp.org, 1.int.pool.ntp.org, ntp.myorg.org]
-  servers:
-    - ntp.juniper.net
 runcmd:
   - sed -i 's/PermitRootLogin .*/PermitRootLogin yes/g' /etc/ssh/sshd_config
   - service ssh restart
-  - sed -i 's/127.0.1.1/10.13.132.62/g' /etc/hosts
-manage_etc_hosts: False
 power_state:
   mode: reboot
   timeout: 120

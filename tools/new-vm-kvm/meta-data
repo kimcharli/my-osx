@@ -1,14 +1,4 @@
 hostname: appformix
 local-hostname: appformix
 instance-id: appformix
-network-interfaces: |
-  auto eth0
-  iface eth0 inet static
-  address 10.13.132.62
-  network 10.13.132.0
-  netmask 255.255.254.0
-  broadcast 10.13.133.255
-  gateway 10.13.132.1
-  dns-search vcpe.pslab.juniper.net
-  dns-nameservers 10.13.132.6
 
