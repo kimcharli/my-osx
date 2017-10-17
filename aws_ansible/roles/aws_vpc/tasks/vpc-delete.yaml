@@ -1,0 +1,127 @@
+
+- name: Find VPC ID to process further
+#  include: roles/vpc/tasks/vpc-find.yaml
+  include_role:
+    name: aws_vpc
+    tasks_from: vpc-find.yaml
+
+# probably this should be done first
+- name: Delete EC2 from {{myvpc_name}}
+  include_role:
+    name: aws_ec2
+    tasks_from: ec2-delete-all.yaml
+
+# should delete ENI before Security Group
+- name: Delete Elastic Network Interfaces
+  include_role:
+    name: aws_ec2_eni
+    tasks_from: ec2-eni-delete-all.yaml
+
+#- name: Delete Elastic Network Interface by iterating vpc.myvpc.enis
+#  include_role:
+#    name: aws_ec2_eni
+#    tasks_from: ec2-eni-delete.yaml
+#  vars:
+#    myeni_name: "{{myeni_dict.key}}"
+#    myeni: "{{myeni_dict.value}}"
+#    myeni_id: 0
+#  with_dict: "{{myvpc.enis}}"
+#  loop_control:
+#    loop_var: myeni_dict
+
+
+
+# should precede delete-route-table
+- name: Start to Delete Security Groups
+  include_role:
+    name: aws_ec2_group
+    tasks_from: ec2-group-delete-all.yaml
+
+#- name: Start to Delete Security Groups
+#  include_role:
+#    name: aws_ec2_group
+#    tasks_from: ec2-group-delete.yaml
+#  vars:
+#    mysg_name: "{{mysg_dict.key}}"
+#    mysg: "{{mysg_dict.value}}"
+#    mysg_id: 0
+#  loop_control:
+#    loop_var: mysg_dict
+#  # deletion should take care of default one as well
+#  with_dict: "{{myvpc.security_groups|combine({'default': {}})}}"
+
+
+- name: Delete RouteTables by interating vpcs.myvpc.routetables
+#  include: roles/vpc/tasks/route-table-delete.yaml
+  include_role:
+    name: aws_vpc_route_table
+    tasks_from: route-table-delete.yaml
+  with_dict: "{{myvpc.routetables}}"
+  loop_control:
+    loop_var: routetable_dict
+
+- name: Delete VPN Gateway for {{myvpc_name}}
+  ec2_vpc_vgw:
+    validate_certs: "{{validate_certs}}"
+    region: "{{myvpc.region}}"
+    vpc_id: "{{ myvpc_id }}"
+    name: "{{myvpc_name}}_vgw"
+    type: "ipsec.1"
+    state: absent
+  ignore_errors: yes
+  when:
+    - myvpc_id != 0
+    - "'vgw' in myvpc"
+
+- name: Delete IGW for {{myvpc_name}}
+  ec2_vpc_igw:
+    validate_certs: "{{validate_certs}}"
+    region: "{{myvpc.region}}"
+    vpc_id: "{{ myvpc_id }}"
+    state: absent
+  ignore_errors: yes
+  when: myvpc_id != 0
+
+- name: Delete Subnet by interating myvpc.subnets
+#  include: roles/vpc/tasks/subnet-delete.yaml
+  include_role:
+    name: aws_vpc_subnet
+    tasks_from: subnet-delete.yaml
+  with_dict: "{{myvpc.subnets}}"
+  loop_control:
+    loop_var: subnet_dict
+  when: myvpc_id != 0
+
+
+
+# aws --region us-east-1 ec2 describe-network-acls --filters Name=vpc-id,Values=vpc-985a4fe1 (has IsDefault: True)
+# aws ec2 describe-network-interfaces --filters Name=vpc-id,Values=vpc-1312066a
+# aws --region us-east-1 ec2 describe-vpc-peering-connections
+# aws --region us-east-1 ec2 describe-route-tables
+# aws --region us-east-1 ec2 describe-route-tables --filters Name=vpc-id,Values=vpc-985a4fe1
+# aws --region us-east-1 ec2 delete-route-table --route-table-id rtb-f9f7b182
+# aws --region us-east-1 ec2 describe-security-groups --filters Name=vpc-id,Values=vpc-985a4fe1
+# aws ec2 describe-subnets --filter Name=vpc-id,Values=vpc-1312066a
+# aws ec2 describe-vpn-connections
+# aws ec2 describe-vpn-gateways
+# aws ec2 describe-internet-gateways --filters Name=attachment.vpc-id,Values=vpc-1312066a
+#
+
+# aws --region us-east-1 ec2 delete-vpc --vpc-id vpc-985a4fe1
+- name: Delete VPC {{myvpc_name}}
+  ec2_vpc_net:
+    validate_certs: "{{validate_certs}}"
+    region: "{{myvpc.region}}"
+    cidr_block: "{{myvpc.cidr_block}}"
+    name: "{{myvpc_name}}"
+    state: absent
+  ignore_errors: yes
+  when: myvpc_id != 0
+
+
+
+
+
+
+
+

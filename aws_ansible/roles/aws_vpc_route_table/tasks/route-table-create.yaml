@@ -1,0 +1,37 @@
+######## CREATE ROUTE TABLE
+
+- name: Find Route Table {{routetable_dict.key}} for further Delete processing
+  include_role:
+    name: aws_vpc_route_table
+    tasks_from: route-table-find.yaml
+
+- name: Create Route Table {{myroutetable_name}} in {{myvpc_name}} when unfound
+  ec2_vpc_route_table:
+    validate_certs: "{{validate_certs}}"
+    region: "{{myvpc.region}}"
+    vpc_id: "{{myvpc_id}}"
+    resource_tags:
+      cc_version_tag: "{{cc_version_tag}}"
+      uuid_tag: "{{uuid_tag}}"
+      Name:      "{{myroutetable_name}}"
+    subnets: "{{myroutetable.subnets}}"
+    routes: "{{myroutetable.routes}}"
+  register: created_routetable
+  when: myroutetable_id == 0
+
+#- debug: var=created_routetable
+
+- name: Set myroutetable_id when Route Table {{myroutetable_name}} in VPC {{myvpc_name}} is created
+  set_fact:
+    myroutetable_id: "{{created_routetable.route_table.id}}"
+  when: not created_routetable|skipped
+
+- name: Register Route Table ID when Route Table {{myroutetable_name}} in VPC {{myvpc_name}} is created
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.routetables.{{myroutetable_name}}.id
+    value: "{{created_routetable.route_table.id}}"
+  when: not created_routetable|skipped
+
+
+

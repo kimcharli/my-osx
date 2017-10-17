@@ -1,0 +1,20 @@
+######## DELETE SUBNET
+
+- name: Sef Fact to Delete Subnet Components {{subnet_dict.key}} in VPC {{myvpc_name}}
+  set_fact:
+    mysubnet_name: "{{subnet_dict.key}}"
+    mysubnet: "{{subnet_dict.value}}"
+    mysubnet_id: 0
+
+- name: Find Subnet for further process
+  include: roles/vpc/tasks/subnet-find.yaml
+
+- name: Delete Subnet {{mysubnet_name}} from {{myvpc_name}}
+  ec2_vpc_subnet:
+    region: "{{myvpc.region}}"
+    vpc_id: "{{myvpc_id}}"
+    cidr: "{{mysubnet.cidr}}"
+    state: absent
+  when: mysubnet_id != 0
+
+

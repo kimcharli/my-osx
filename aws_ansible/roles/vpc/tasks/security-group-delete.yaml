@@ -1,0 +1,48 @@
+######## SECURITY GROUP ROUTE TABLE
+
+# Temporary workaround to avoid MAIN ROUTE TABLE DELETION FAILURE
+#- name: Set Fact To Delete Security Group Components {{routetable_dict.key}} in VPC {{myvpc_name}}
+#  set_fact:
+#    myroutetable_name: "{{routetable_dict.key}}"
+#    myroutetable: "{{routetable_dict.value}}"
+#    myroutetable_id: 0
+#
+#- name: Find Route Table for further processing
+#  include: roles/vpc/tasks/routetable-find.yaml
+#
+#- name: Delete Route Table {{myroutetable_name}} in {{myvpc_name}} when found
+#  ec2_vpc_route_table:
+#    region: "{{myvpc.region}}"
+#    vpc_id: "{{myvpc_id}}"
+#    route_table_id: "{{myroutetable_id}}"
+#    state: absent
+##    validate_certs: no
+#  register: route_table_deleted
+#  when: myroutetable_id != 0
+#
+#- debug: var=route_table_deleted
+#- debug: var=myroutetable_id
+
+- ec2_group_facts:
+    region: "{{myvpc.region}}"
+    filters:
+      vpc-id: "{{myvpc_id}}"
+  register: found_groups
+
+- debug: var=found_groups
+
+#- debug: msg="{{mysg_dict['group_id']}}"
+#  loop_control:
+#    loop_var: mysg_dict
+#  with_items: "{{found_groups.security_groups}}"
+
+- ec2_group:
+    region: "{{myvpc.region}}"
+    state: absent
+    group_id: "{{mysg_dict['group_id']}}"
+  loop_control:
+    loop_var: mysg_dict
+  with_items: "{{found_groups.security_groups}}"
+  ignore_errors: yes
+
+

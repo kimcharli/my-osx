@@ -1,0 +1,60 @@
+######## DELETE Elastic Network Interface
+# http://docs.ansible.com/ansible/latest/ec2_eni_module.html
+
+# should precede delete-group
+#- name: Delete Elastic Network Interface by iterating vpc.myvpc.enis
+#  include_role:
+#    name: aws_ec2_eni
+#    tasks_from: ec2-eni-delete.yaml
+#  vars:
+#    myeni_name: "{{myeni_dict.key}}"
+#    myeni: "{{myeni_dict.value}}"
+#    myeni_id: 0
+#  with_dict: "{{myvpc.enis}}"
+#  loop_control:
+#    loop_var: myeni_dict
+#
+
+- name: Find Elastic Network Interfaces under VPC {{myvpc_name}}
+  ec2_eni_facts:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    filters:
+      vpc-id: "{{myvpc_id}}"
+#      description: "{{myeni_name}}"
+  register: found_enis
+
+#- debug: var=found_enis
+
+- name: Iterate Elastic Network Interfaces and Delete via ec2-eni-delete.yaml
+  include_role:
+    name: aws_ec2_eni
+    tasks_from: ec2-eni-delete.yaml
+  vars:
+    myeni_id: "{{myeni_item.network_interface_id}}"
+  loop_control:
+    loop_var: myeni_item
+  with_items: "{{found_enis.network_interfaces}}"
+
+
+#- name: Delete EIP
+#  ec2_eip:
+#    validate_certs: "{{validate_certs}}"
+#    region: "{{myvpc.region}}"
+#    device_id: "{{myeni_id}}"
+#    in_vpc: True
+#    state: absent
+#  when:
+#    - myeni_id != 0
+#    - myeni.assign_public_ip
+#
+#- name: Delete Elastic Network Interface {{myeni_name}} from {{myvpc_name}}
+#  ec2_eni:
+#    region: "{{myvpc.region}}"
+#    validate_certs: "{{validate_certs}}"
+#    force_detach: yes
+#    eni_id: "{{myeni_id}}"
+#    state: absent
+#  when: myeni_id != 0
+#
+#

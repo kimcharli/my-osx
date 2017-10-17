@@ -1,0 +1,61 @@
+
+- name: Delete VPC Components for {{vpcdict.key}}
+  set_fact:
+    myvpc_name: "{{vpcdict.key}}"
+    myvpc: "{{vpcdict.value}}"
+    myvpc_id: 0
+
+- name: Find VPC ID to process further
+  include: roles/vpc/tasks/vpc-find.yaml
+
+
+#- include: roles/vpc/tasks/security-group-delete.yaml
+
+- name: Delete RouteTables by interating vpcs.myvpc.routetables
+  include: roles/vpc/tasks/route-table-delete.yaml
+  with_dict: "{{myvpc.routetables}}"
+  loop_control:
+    loop_var: routetable_dict
+
+
+- name: Delete Subnet by interating myvpc.subnets
+  include: roles/vpc/tasks/subnet-delete.yaml
+  with_dict: "{{myvpc.subnets}}"
+  loop_control:
+    loop_var: subnet_dict
+  when: myvpc_id != 0
+
+- name: Delete VPN Gateway for {{myvpc_name}}
+  ec2_vpc_vgw:
+    region: "{{myvpc.region}}"
+    vpc_id: "{{ myvpc_id }}"
+    name: "{{myvpc_name}}_vgw"
+    type: "ipsec.1"
+    state: absent
+  ignore_errors: yes
+  when: myvpc_id != 0
+
+- name: Delete IGW for {{myvpc_name}}
+  ec2_vpc_igw:
+    region: "{{myvpc.region}}"
+    vpc_id: "{{ myvpc_id }}"
+    state: absent
+  ignore_errors: yes
+  when: myvpc_id != 0
+
+- name: Delete VPC {{myvpc_name}}
+  ec2_vpc_net:
+    region: "{{myvpc.region}}"
+    cidr_block: "{{myvpc.cidr_block}}"
+    name: "{{myvpc_name}}"
+    state: absent
+  ignore_errors: yes
+  when: myvpc_id != 0
+
+
+
+
+
+
+
+

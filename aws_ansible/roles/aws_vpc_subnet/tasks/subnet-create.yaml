@@ -1,0 +1,39 @@
+######## CREATE SUBNET
+
+- name: Find Subnet by including subnet-find.yaml
+#  include: roles/vpc/tasks/subnet-find.yaml
+  include_role:
+    name: aws_vpc_subnet
+    tasks_from: subnet-find.yaml
+
+- name: Create Subnet {{mysubnet_name}} in {{myvpc_name}}
+  ec2_vpc_subnet:
+    validate_certs: "{{validate_certs}}"
+    region: "{{myvpc.region}}"
+    vpc_id: "{{myvpc_id}}"
+    cidr:   "{{ mysubnet.cidr }}"
+    az:     "{{myvpc.region}}{{ mysubnet.az }}"
+    resource_tags:
+      cc_version_tag: "{{cc_version_tag}}"
+      uuid_tag: "{{uuid_tag}}"
+      Name:      "{{mysubnet_name}}"
+  register: created_subnet
+  when: mysubnet_id == 0
+
+#- debug: var=created_subnet
+
+- name: Set mysubnet_id when Subnet {{mysubnet_name}} in VPC {{myvpc_name}} is created
+  set_fact:
+    mysubnet_id: "{{created_subnet.subnet.id}}"
+  when: not created_subnet|skipped
+
+- name: Register Subnet ID when Subnet {{mysubnet_name}} in VPC {{myvpc_name}} is created
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.subnets.{{mysubnet_name}}.id
+    value: "{{created_subnet.subnet.id}}"
+  when: not created_subnet|skipped
+
+
+
+

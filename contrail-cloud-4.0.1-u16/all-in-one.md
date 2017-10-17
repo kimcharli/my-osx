@@ -14,6 +14,12 @@ ubuntu@i-contrail-analytics-vm:~$ docker exec -it analyticsdb bash
 root@i-contrail-analytics-vm(analyticsdb):/# grep mini /etc/contrail/contrail-database-nodemgr.conf
 minimum_diskGB = 56
 
+### or, make disk bigger
+### and make more memory
+
+### NEED TO CHECK SIZE of disks
+### no ipv6?
+
 ## rabbitmq ctrl
 one of below
 - manage_etc_hosts: false in user-data
@@ -208,4 +214,38 @@ kafka:                        active
 contrail-database-nodemgr:    active
 ubuntu@i-contrail-analytics-vm:~$
 ```
+
+
+### ubuntu 16.04.2 cloud image
+Linux i-regional-ms-vm 4.4.0-96-generic #119-Ubuntu SMP Tue Sep 12 14:59:54 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
+
+
+
+
+
+### nova filter
+
+scheduler_filter_classes = nova.cells.filters.all_filters
+enabled_filters = RetryFilter, AvailabilityZoneFilter, RamFilter, DiskFilter, ComputeFilter, ComputeCapabilitiesFilter, ImagePropertiesFilter, ServerGroupAntiAffinityFilter, ServerGroupAffinityFilter
+available_filters = ['nova.scheduler.filters.all_filters']
+
+systemctl restart nova-compute
+
+
+
+openstack server create  --os-tenant-name test-p  --image 94c159ca-5b29-4a7b-ba51-71326ad86417  --flavor m1.tiny  --nic net-id=80342b01-e147-4932-9433-c1f81dfdf55e  --hint different_host=cb9253ee-76eb-44f0-a640-f82a89c5bda9  --availability-zone nova:i-contrail-analytics-vm  hint-az-4
+
+openstack server create  --os-tenant-name test-p  --image 94c159ca-5b29-4a7b-ba51-71326ad86417  --flavor m1.tiny  --nic net-id=80342b01-e147-4932-9433-c1f81dfdf55e  --hint different_host=cb9253ee-76eb-44f0-a640-f82a89c5bda9  --availability-zone nova:i-installer-vm  hint-az-5
+
+openstack server create \
+ --os-tenant-name test-p \
+ --image 94c159ca-5b29-4a7b-ba51-71326ad86417 \
+ --flavor m1.tiny \
+ --nic net-id=80342b01-e147-4932-9433-c1f81dfdf55e \
+ --hint different_host=cb9253ee-76eb-44f0-a640-f82a89c5bda9 \
+ --availability-zone nova:i-contrail-analytics-vm.vcpe.pslab.juniper.net \
+ hint-az-1
+
+
+
 

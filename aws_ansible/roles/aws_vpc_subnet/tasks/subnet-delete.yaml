@@ -1,0 +1,19 @@
+######## DELETE SUBNET
+
+- name: Find Subnet for further process
+#  include: roles/vpc/tasks/subnet-find.yaml
+  include_role:
+    name: aws_vpc_subnet
+    tasks_from: subnet-find.yaml
+
+
+- name: Delete Subnet {{mysubnet_name}} from {{myvpc_name}}
+  ec2_vpc_subnet:
+    validate_certs: "{{validate_certs}}"
+    region: "{{myvpc.region}}"
+    vpc_id: "{{myvpc_id}}"
+    cidr: "{{mysubnet.cidr}}"
+    state: absent
+  when: mysubnet_id != 0
+
+

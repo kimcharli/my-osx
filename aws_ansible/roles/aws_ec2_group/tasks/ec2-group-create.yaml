@@ -1,0 +1,33 @@
+######## CREATE Security Group
+
+- name: Find Security Group by including ec2-group-find.yaml
+  include_role:
+    name: aws_ec2_group
+    tasks_from: ec2-group-find.yaml
+
+- name: Create Security Group {{mysg_name}} in {{myvpc_name}}
+  ec2_group:
+    region: "{{myvpc.region}}"
+    vpc_id: "{{myvpc_id}}"
+    name: "{{mysg_name}}"
+    description: mysg_name
+    rules: "{{mysg.rules}}"
+    validate_certs: "{{validate_certs}}"
+  register: created_sg
+  when: mysg_id == 0
+
+#- debug: var=created_sg
+
+- name: Set Fact mysg_id when Security Group {{mysg_name}} in VPC {{myvpc_name}} is created
+  set_fact:
+    mysg_id_created: "{{created_sg.group_id}}"
+  when: not created_sg|skipped
+
+- name: Register Security Group ID when Security Group {{mysg_name}} in VPC {{myvpc_name}} is created
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.security_groups.{{mysg_name}}.id
+    value: "{{mysg_id_created}}"
+  when: not created_sg|skipped
+
+

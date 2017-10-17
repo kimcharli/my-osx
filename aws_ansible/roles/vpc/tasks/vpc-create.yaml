@@ -1,0 +1,89 @@
+- name: Create VPC Components for {{vpcdict.key}}
+  set_fact:
+    myvpc_name: "{{vpcdict.key}}"
+    myvpc: "{{vpcdict.value}}"
+    myvpc_id: 0
+
+- name: Find VPC ID for further processing
+  include: roles/vpc/tasks/vpc-find.yaml
+
+- name: Create VPC {{myvpc_name}} when unfound
+  ec2_vpc_net:
+    name: "{{myvpc_name}}"
+    region: "{{myvpc.region}}"
+    cidr_block: "{{myvpc.cidr_block}}"
+    tags:
+      cc_version_tag: "{{cc_version_tag}}"
+      uuid_tag: "{{uuid_tag}}"
+  register: created_vpc
+  when: myvpc_id == 0
+
+- name: Set fact myvpc_id when VPC {{myvpc_name}} is created
+  set_fact:
+    myvpc_id: "{{created_vpc.vpc.id}}"
+  when: not created_vpc|skipped
+
+- name: Register VPC ID when VPC {{myvpc_name}} is created
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.id
+    value: "{{created_vpc.vpc.id}}"
+  when: not created_vpc|skipped
+
+- name: Create Subnets by interating vpcs.myvpc.subnets
+  include: roles/vpc/tasks/subnet-create.yaml
+  with_dict: "{{myvpc.subnets}}"
+  loop_control:
+    loop_var: subnet_dict
+
+
+- name: Create IGW for VPC {{myvpc_name}}
+  ec2_vpc_igw:
+    region: "{{myvpc.region}}"
+    vpc_id: "{{myvpc_id}}"
+  register: created_igw
+
+- name: Register igw id
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.igw.id
+    value: "{{created_igw.gateway_id}}"
+
+# aws ec2 create-route --route-table-id rtb-22574640 --destination-cidr-block 0.0.0.0/0 --gateway-id igw-c0a643a9
+
+- name: Tagging IGW resource
+  ec2_tag:
+    region: "{{myvpc.region}}"
+    resource: "{{created_igw.gateway_id}}"
+    tags:
+      Name: "{{myvpc_name}}_igw"
+      cc_version_tag: "{{cc_version_tag}}"
+      uuid_tag: "{{uuid_tag}}"
+
+
+- name: Create VPN Gateway for VPC {{myvpc_name}}
+  ec2_vpc_vgw:
+    region: "{{myvpc.region}}"
+    vpc_id: "{{myvpc_id}}"
+    name:               "{{myvpc_name}}_vgw"
+    type:               "ipsec.1"
+    tags:
+      cc_version_tag: "{{cc_version_tag}}"
+      uuid_tag: "{{uuid_tag}}"
+  register: created_vgw
+
+- name: Register vgw id
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.vgw.id
+    value: "{{created_vgw.vgw.id}}"
+
+# Depends on IGW, VGW, Subnets
+- name: Create RouteTables by interating vpcs.myvpc.routetables
+  include: roles/vpc/tasks/route-table-create.yaml
+  with_dict: "{{myvpc.routetables}}"
+  loop_control:
+    loop_var: routetable_dict
+
+
+

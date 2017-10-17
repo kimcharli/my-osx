@@ -1,0 +1,90 @@
+######## DELETE Elastic Network Interface
+# http://docs.ansible.com/ansible/latest/ec2_eni_module.html
+
+#- name: Find Elastic Network Interface via ec2-eni-find.yaml
+#  include_role:
+#    name: aws_ec2_eni
+#    tasks_from: ec2-eni-find.yaml
+
+#- debug: var=myeni_item
+#ok: [localhost] => {
+#    "myeni_item": {
+#        "association": {
+#            "allocation_id": "eipalloc-4427b476",
+#            "association_id": "eipassoc-caf685fe",
+#            "ip_owner_id": "807156892130",
+#            "public_dns_name": "ec2-34-230-130-238.compute-1.amazonaws.com",
+#            "public_ip": "34.230.130.238"
+#        },
+#        "attachment": {
+#            "attach_time": "2017-09-16T03:00:36+00:00",
+#            "attachment_id": "eni-attach-42141cb7",
+#            "delete_on_termination": false,
+#            "device_index": 0,
+#            "instance_id": "i-05b1de0a63aec3a19",
+#            "instance_owner_id": "807156892130",
+#            "status": "attached"
+#        },
+#        "availability_zone": "us-east-1a",
+#        "description": "apfmx_installer",
+#        "groups": [
+#            {
+#                "group_id": "sg-d639e5a5",
+#                "group_name": "sg_installer"
+#            }
+#        ],
+#        "interface_type": "interface",
+#        "ipv6_addresses": [],
+#        "mac_address": "12:62:2f:33:b0:fe",
+#        "network_interface_id": "eni-7e684bde",
+#        "owner_id": "807156892130",
+#        "private_dns_name": "ip-10-10-0-11.ec2.internal",
+#        "private_ip_address": "10.10.0.11",
+#        "private_ip_addresses": [
+#            {
+#                "association": {
+#                    "allocation_id": "eipalloc-4427b476",
+#                    "association_id": "eipassoc-caf685fe",
+#                    "ip_owner_id": "807156892130",
+#                    "public_dns_name": "ec2-34-230-130-238.compute-1.amazonaws.com",
+#                    "public_ip": "34.230.130.238"
+#                },
+#                "primary": true,
+#                "private_dns_name": "ip-10-10-0-11.ec2.internal",
+#                "private_ip_address": "10.10.0.11"
+#            }
+#        ],
+#        "requester_id": "AIDAIETGI5VOD373S72IY",
+#        "requester_managed": false,
+#        "source_dest_check": true,
+#        "status": "in-use",
+#        "subnet_id": "subnet-c33a10ef",
+#        "tag_set": {},
+#        "vpc_id": "vpc-eec1d597"
+#    }
+#}
+
+# based on the timing, this may happen
+# The network interface at device index 0 cannot be detached.
+- name: Delete EIP
+  ec2_eip:
+    validate_certs: "{{validate_certs}}"
+    region: "{{myvpc.region}}"
+    device_id: "{{myeni_id}}"
+    in_vpc: True
+    state: absent
+  when:
+    - myeni_id != 0
+#    - myeni.assign_public_ip
+# TODO: process public ip
+
+- name: Delete Elastic Network Interface {{myeni_name}} from {{myvpc_name}}
+  ec2_eni:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    force_detach: yes
+    eni_id: "{{myeni_id}}"
+    state: absent
+  when: myeni_id != 0
+
+

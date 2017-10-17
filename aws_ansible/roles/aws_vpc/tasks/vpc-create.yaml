@@ -1,0 +1,168 @@
+
+- name: Find VPC ID for further processing
+#  include: roles/vpc/tasks/vpc-find.yaml
+  include_role:
+    name: aws_vpc
+    tasks_from: vpc-find.yaml
+
+- name: Create VPC {{myvpc_name}} when unfound
+  ec2_vpc_net:
+    validate_certs: "{{validate_certs}}"
+    name: "{{myvpc_name}}"
+    region: "{{myvpc.region}}"
+    cidr_block: "{{myvpc.cidr_block}}"
+    tags:
+      cc_version_tag: "{{cc_version_tag}}"
+      uuid_tag: "{{uuid_tag}}"
+  register: created_vpc
+  when: myvpc_id == 0
+
+- name: Set fact myvpc_id when VPC {{myvpc_name}} is created
+  set_fact:
+    myvpc_id: "{{created_vpc.vpc.id}}"
+  when: not created_vpc|skipped
+
+- name: Register VPC ID when VPC {{myvpc_name}} is created
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.id
+    value: "{{myvpc_id}}"
+  when: not created_vpc|skipped
+
+
+######## Create KeyPair
+- name: Create Key Pairs from /keypair
+  ec2_key:
+    region: "{{myvpc.region}}"
+    name: "{{kp_dict.key}}"
+    key_material: "{{kp_dict.value}}"
+    force: false
+    state: present
+  loop_control:
+    loop_var: kp_dict
+  with_dict: "{{keypair}}"
+
+# aws --region us-east-1 ec2 describe-internet-gateways
+
+- name: Create IGW for VPC {{myvpc_name}}
+  ec2_vpc_igw:
+    region: "{{myvpc.region}}"
+    vpc_id: "{{myvpc_id}}"
+    validate_certs: "{{validate_certs}}"
+  register: created_igw
+
+- name: Register igw id
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.igw.id
+    value: "{{created_igw.gateway_id}}"
+
+# aws ec2 create-route --route-table-id rtb-22574640 --destination-cidr-block 0.0.0.0/0 --gateway-id igw-c0a643a9
+
+- name: Tagging IGW resource
+  ec2_tag:
+    region: "{{myvpc.region}}"
+    resource: "{{created_igw.gateway_id}}"
+    validate_certs: "{{validate_certs}}"
+    tags:
+      Name: "{{myvpc_name}}_igw"
+      cc_version_tag: "{{cc_version_tag}}"
+      uuid_tag: "{{uuid_tag}}"
+
+
+
+
+- name: Create Security Group by iterating vpcs.myvpc.security_groups
+#  include: roles/vpc/tasks/route-table-create.yaml
+  include_role:
+    name: aws_ec2_group
+    tasks_from: ec2-group-create.yaml
+  vars:
+    mysg_name: "{{mysg_dict.key}}"
+    mysg: "{{mysg_dict.value}}"
+    mysg_id: 0
+  with_dict: "{{myvpc.security_groups}}"
+  loop_control:
+    loop_var: mysg_dict
+
+
+# deponds on Security Group due to included ENI
+- name: Create Subnets by iterating vpcs.myvpc.subnets
+  include_role:
+    name: aws_vpc_subnet
+    tasks_from: subnet-create.yaml
+  with_dict: "{{myvpc.subnets}}"
+  loop_control:
+    loop_var: subnet_dict
+
+- name: Create Elastic Network Interface by iterating vpcs.myvpc.enis
+  include_role:
+    name: aws_ec2_eni
+    tasks_from: ec2-eni-create-all.yaml
+#  with_dict: "{{myvpc.enis}}"
+#  loop_control:
+#    loop_var: myeni_dict
+
+
+- name: Create VPN Gateway for VPC {{myvpc_name}}
+  ec2_vpc_vgw:
+    region: "{{myvpc.region}}"
+    vpc_id: "{{myvpc_id}}"
+    name:               "{{myvpc_name}}_vgw"
+    type:               "ipsec.1"
+    tags:
+      cc_version_tag: "{{cc_version_tag}}"
+      uuid_tag: "{{uuid_tag}}"
+  register: created_vgw
+  when: "'vgw' in myvpc"
+
+- name: Register vgw id
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.vgw.id
+    value: "{{created_vgw.vgw.id}}"
+  when: "'vgw' in myvpc"
+
+# Depends on IGW, VGW, Subnets
+- name: Create RouteTables by interating vpcs.myvpc.routetables
+  include_role:
+    name: aws_vpc_route_table
+    tasks_from: route-table-create.yaml
+  with_dict: "{{myvpc.routetables}}"
+  loop_control:
+    loop_var: routetable_dict
+
+# from Ansible 2.4
+#- name: Create new vpc endpoint with the default policy
+#  ec2_vpc_endpoint:
+#    state: present
+#    region: "{{myvpc.region}}"
+#    vpc_id: "{{myvpc_id}}"
+#    service: "com.amazonaws.us-east-2.s3"
+#    route_table_ids:
+#      - "{{vpcs[myvpc_name].routetables.rt_appformix.id}}"
+#  register: new_vpc_endpoint
+
+# TODO: implement vpc-endpoint for s3
+#- name: Create new vpc endpoint with the default policy
+#  command: "aws --region {{myvpc.region}} ec2 create-vpc-endpoint --service-name {{endpoint_dict.key}} --vpc-id {{myvpc_id}} --route-table-ids {{vpcs[myvpc_name].routetables.rt_appformix.id}}"
+#  ignore_errors: yes
+#  loop_control:
+#    loop_var: endpoint_dict
+#  with_dict: "{{vpcs[myvpc_name].vpc_endpoint}}"
+#  register: new_vpc_endpoint
+
+
+
+#- debug: var=new_vpc_endpoint
+
+#- name: Start to Create EC2
+#  include_role:
+#    name: aws_ec2
+#    tasks_from: ec2-create.yaml
+#  loop_control:
+#    loop_var: myec2_dict
+#  with_dict: "{{myvpc.ec2}}"
+#
+
+

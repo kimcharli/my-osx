@@ -1,0 +1,13 @@
+#- name: Find EC2 instance via ec2-find.yaml
+#  include_role:
+#    name: aws_ec2
+#    tasks_from: ec2-find.yaml
+
+- name: Delete EC2 {{myec2_name}} if found
+  ec2:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    instance_ids: [ "{{myec2_id}}" ]
+    state: absent
+    wait: yes
+  when: myec2_id != 0

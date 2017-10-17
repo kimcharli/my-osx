@@ -1,0 +1,82 @@
+# http://docs.ansible.com/ansible/latest/ec2_eni_facts_module.html
+# aws --region us-east-1 ec2 describe-network-interfaces
+
+#
+#- name: Sef Fact for Elastic Network Interface Components {{myeni_dict.key}} in VPC {{myvpc_name}}
+#  set_fact:
+#    myeni_name: "{{myeni_dict.key}}"
+#    myeni: "{{myeni_dict.value}}"
+#    myeni_id: 0
+
+- name: Find Elastic Network Interface Components {{myeni_name}} under VPC {{myvpc_name}}
+  ec2_eni_facts:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    filters:
+      description: "{{myeni_name}}"
+  register: found_eni
+
+#- debug: var=found_eni
+#ok: [localhost] => {
+#    "found_eni": {
+#        "changed": false,
+#        "network_interfaces": [
+#            {
+#                "availability_zone": "us-east-1a",
+#                "description": "apfmx_installer",
+#                "groups": [
+#                    {
+#                        "group_id": "sg-d639e5a5",
+#                        "group_name": "sg_installer"
+#                    }
+#                ],
+#                "interface_type": "interface",
+#                "ipv6_addresses": [],
+#                "mac_address": "12:62:2f:33:b0:fe",
+#                "network_interface_id": "eni-7e684bde",
+#                "owner_id": "807156892130",
+#                "private_dns_name": "ip-10-10-0-11.ec2.internal",
+#                "private_ip_address": "10.10.0.11",
+#                "private_ip_addresses": [
+#                    {
+#                        "primary": true,
+#                        "private_dns_name": "ip-10-10-0-11.ec2.internal",
+#                        "private_ip_address": "10.10.0.11"
+#                    }
+#                ],
+#                "requester_id": "AIDAIETGI5VOD373S72IY",
+#                "requester_managed": false,
+#                "source_dest_check": true,
+#                "status": "available",
+#                "subnet_id": "subnet-c33a10ef",
+#                "tag_set": {},
+#                "vpc_id": "vpc-eec1d597"
+#            }
+#        ],
+#        "response_metadata": {
+#            "http_headers": {
+#                "content-type": "text/xml;charset=UTF-8",
+#                "date": "Sat, 16 Sep 2017 02:39:55 GMT",
+#                "server": "AmazonEC2",
+#                "transfer-encoding": "chunked",
+#                "vary": "Accept-Encoding"
+#            },
+#            "http_status_code": 200,
+#            "request_id": "2166dcc9-9221-4de2-9e18-8d6045cbc540",
+#            "retry_attempts": 0
+#        }
+#    }
+#}
+
+- name: set myeni_id when Elastic Network Interface {{myeni_name}} in VPC {{myvpc_name}} if found
+  set_fact:
+    myeni_id: "{{ found_eni.network_interfaces.0.network_interface_id }}"
+  when: found_eni.network_interfaces|length > 0
+
+- name: Register Elastic Network Interface ID when {{myeni_name}} in VPC {{myvpc_name}} if found
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.enis.{{myeni_name}}.id
+    value: "{{myeni_id}}"
+  when: found_eni.network_interfaces|length > 0
+

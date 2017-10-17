@@ -1,0 +1,12 @@
+- name: Create Elastic Network Interface by iterating vpcs.myvpc.enis
+  include_role:
+    name: aws_ec2_eni
+    tasks_from: ec2-eni-create.yaml
+  vars:
+    myeni_name: "{{myeni_dict.key}}"
+    myeni: "{{myeni_dict.value}}"
+    myeni_id: 0
+  with_dict: "{{myvpc.enis}}"
+  loop_control:
+    loop_var: myeni_dict
+

@@ -1,0 +1,7 @@
+TYPE="Bridge"
+BOOTPROTO="none"
+NAME="br-ctlplane"
+DEVICE="br-ctlplane"
+ONBOOT="yes"
+NM_CONTROLLED=no
+

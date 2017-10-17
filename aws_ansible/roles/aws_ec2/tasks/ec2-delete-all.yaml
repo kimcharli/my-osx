@@ -1,0 +1,52 @@
+
+- name: Find EC2s under VPC {{myvpc_name}}
+  ec2_remote_facts:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    filters:
+      instance-state-name: running
+      vpc-id: "{{myvpc_id}}"
+  register: found_ec2
+
+- debug: var=found_ec2
+
+- name: Iterate EC2s and Delete via ec2-delete.yaml
+  include_role:
+    name: aws_ec2
+    tasks_from: ec2-delete.yaml
+  vars:
+    myec2_id: "{{myec2_item.id}}"
+  loop_control:
+    loop_var: myec2_item
+  with_items: "{{found_ec2.instances}}"
+
+#
+#
+#- name: Set fact myec2_id when EC2 {{myec2_name}} is found
+#  set_fact:
+#    myec2_id: "{{found_ec2.instances.0.id}}"
+#  when: found_ec2.instances|length > 0
+#
+#
+#
+##- name: Delete EIP
+##  ec2_eip:
+##    validate_certs: "{{validate_certs}}"
+##    region: "{{myvpc.region}}"
+##    device_id: "{{myeni_id}}"
+##    in_vpc: True
+##    state: absent
+##  when:
+##    - myeni_id != 0
+##    - myeni.assign_public_ip
+##
+##- name: Delete Elastic Network Interface {{myeni_name}} from {{myvpc_name}}
+##  ec2_eni:
+##    region: "{{myvpc.region}}"
+##    validate_certs: "{{validate_certs}}"
+##    force_detach: yes
+##    eni_id: "{{myeni_id}}"
+##    state: absent
+##  when: myeni_id != 0
+##
+##

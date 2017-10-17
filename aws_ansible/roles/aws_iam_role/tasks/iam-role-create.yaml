@@ -1,0 +1,35 @@
+######## CREATE Elastic Network Interface
+# http://docs.ansible.com/ansible/latest/ec2_eni_module.html
+
+- name: Find Elastic Network Interface under {{mysubnet_name}} by including ec2-eni-find.yaml
+  include_role:
+    name: aws_ec2_eni
+    tasks_from: ec2-eni-find.yaml
+
+- name: Create Elastic Network Interface {{myeni_name}} under {{mysubnet_name}} in {{myvpc_name}}
+  ec2_eni:
+    region: "{{myvpc.region}}"
+    subnet_id: "{{mysubnet_id}}"
+    validate_certs: "{{validate_certs}}"
+    description: "{{myeni_name}}"
+    security_groups: "{{myeni.security_groups}}"
+    private_ip_address: "{{myeni.private_ip_address}}"
+#    delete_on_termination: yes
+  register: created_eni
+  when: myeni_id == 0
+
+- debug: var=created_eni
+
+- name: Set myeni_id when Elastic Network Interface {{mysg_name}} in VPC {{myvpc_name}} is created
+  set_fact:
+    myeni_id: "{{created_eni.interface.id}}"
+  when: not created_eni|skipped
+
+- name: Register Elastic Network Interface ID when Elastic Network Interface {{mysg_name}} in VPC {{myvpc_name}} is created
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.subnets.{{mysubnet_name}}.enis.{{myeni_name}}.id
+    value: "{{myeni_id}}"
+  when: not created_eni|skipped
+
+

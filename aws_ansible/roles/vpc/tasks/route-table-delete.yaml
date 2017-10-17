@@ -1,0 +1,23 @@
+######## DELETE ROUTE TABLE
+
+- name: Set Fact To Delete Route Table Components {{routetable_dict.key}} in VPC {{myvpc_name}}
+  set_fact:
+    myroutetable_name: "{{routetable_dict.key}}"
+    myroutetable: "{{routetable_dict.value}}"
+    myroutetable_id: 0
+
+- name: Find Route Table for further processing
+  include: roles/vpc/tasks/routetable-find.yaml
+
+- name: Delete Route Table {{myroutetable_name}} in {{myvpc_name}} when found
+  ec2_vpc_route_table:
+    region: "{{myvpc.region}}"
+    vpc_id: "{{myvpc_id}}"
+    route_table_id: "{{myroutetable_id}}"
+    state: absent
+#    validate_certs: no
+  register: route_table_deleted
+  when: myroutetable_id != 0
+
+#- debug: var=route_table_deleted
+#- debug: var=myroutetable_id

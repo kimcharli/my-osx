@@ -1,0 +1,39 @@
+- name: Sef Fact to for EC2 Components {{myec2_dict.key}} in VPC {{myvpc_name}}
+  set_fact:
+    myec2_name: "{{myec2_dict.key}}"
+    myec2: "{{myec2_dict.value}}"
+    myec2_id: 0
+
+- name: Find EC2 {{myec2_name}}
+  ec2_remote_facts:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    filters:
+      instance-state-name: running
+      "tag:Name": "{{myec2_name}}"
+      "tag:uuid_tag": "{{uuid_tag}}"
+#      "tag:cc_version_tag": "{{cc_version_tag}}"
+  register: found_ec2
+
+- name: Set fact myec2_id when EC2 {{myec2_name}} is found
+  set_fact:
+    myec2_id: "{{found_ec2.instances.0.id}}"
+  when: found_ec2.instances|length > 0
+
+- name: Register EC2 ID when EC2 {{myec2_name}} is found
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.ec2.{{myec2_name}}.id
+    value: "{{found_ec2.instances.0.id}}"
+  when: found_ec2.instances|length > 0
+
+- name: Set host {{myec2_name}} if found
+  add_host:
+    hostname: "{{myec2_name}}"
+    # it it public_ip_address here
+    ansible_host: "{{ found_ec2.instances.0.public_ip_address }}"
+    private_dns_name: "{{ found_ec2.instances.0.private_dns_name }}"
+    groups: "{{myec2.inventory_group}}"
+    ansible_user: "{{myec2.user}}"
+  when: found_ec2.instances|length > 0
+

@@ -1,0 +1,47 @@
+######## DELETE SECURITY GROUP
+#- name: Sef Fact to for Security Group Components {{mysg_dict.key}} in VPC {{myvpc_name}}
+#  set_fact:
+#    mysg_name: "{{mysg_dict.key}}"
+#    mysg: "{{mysg_dict.value}}"
+#    mysg_id: 0
+
+- name: Find Security Groups in VPC {{myvpc_name}}
+  ec2_group_facts:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    filters:
+      vpc-id: "{{myvpc_id}}"
+#      "group-name": "{{mysg_name}}"
+  register: found_sgs
+
+#- debug: var=found_sgs
+
+- name: Iterate Security Groups and Delete via ec2-group-delete.yaml
+  include_role:
+    name: aws_ec2_group
+    tasks_from: ec2-group-delete.yaml
+  vars:
+    mysg_id: "{{mysg_item.group_id}}"
+    mysg_name: "{{mysg_item.group_name}}"
+  loop_control:
+    loop_var: mysg_item
+  with_items: "{{found_sgs.security_groups}}"
+
+
+#- name: Set Fact mysg_id when Security Group {{mysg_name}} in VPC {{myvpc_name}} is found
+#  set_fact:
+#    mysg_id: "{{found_sg.security_groups.0.group_id}}"
+#  when:
+#    - not found_sg|skipped
+#    - found_sg.security_groups|length > 0
+#
+#- name: Register Security Group ID when Security Group {{mysg_name}} in VPC {{myvpc_name}} is found
+#  set_fact_any:
+#    top: "{{vpcs}}"
+#    name: vpcs.{{myvpc_name}}.security_groups.{{mysg_name}}.id
+#    value: "{{mysg_id}}"
+#  when:
+#    - found_sg.security_groups|length > 0
+#    - mysg_name != 'default'
+#
+

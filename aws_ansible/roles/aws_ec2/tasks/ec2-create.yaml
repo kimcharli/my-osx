@@ -1,0 +1,57 @@
+- name: Find EC2 instance via ec2-find.yaml
+  include_role:
+    name: aws_ec2
+    tasks_from: ec2-find.yaml
+
+#- debug: var=vpcs.{{myvpc_name}}.enis
+
+#- debug: var="{{ myec2.network_interfaces|map('extract', vpcs[myvpc_name].enis, 'id' )|list}}"
+
+- set_fact:
+    this_enis: "{{ this_enis|default({})|combine({enis_loop.key: enis_loop.value.id}) }}"
+  loop_control:
+    loop_var: enis_loop
+  with_dict: "{{vpcs[myvpc_name].enis}}"
+
+#- debug: var=this_enis
+
+- name: Create EC2 {{myec2_name}} if not found
+  ec2:
+    key_name: "{{keyname}}"
+    instance_type: "{{myec2.instance_type}}"
+    image: "{{myec2.image}}"
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    count: 1
+    network_interfaces: "{{myec2.network_interfaces|map('extract', this_enis)|list}}"
+    user_data: "{{lookup('template', 'user-data.sh.j2')}}"
+    # to reduce update conflict with subsequent provisioning
+    instance_profile_name: "{{myec2.iam_role}}"
+    volumes:
+      - device_name: /dev/sda1
+        volume_size: "{{myec2.volume_size}}"
+    instance_tags:
+      Name: "{{myec2_name}}"
+      uuid_tag: "{{uuid_tag}}"
+    state: present
+    wait: yes
+  register: ec2_created
+  when: myec2_id == 0
+
+#- debug: var=ec2_created
+
+- name: Set Fact myec2_id when EC2 {{myec2_name}} is created
+  set_fact:
+    myec2_id: "{{ec2_created.instances.0.id}}"
+  when: not ec2_created|skipped
+
+- name: Add host {{myec2_name}} with public ip if created
+  add_host:
+    hostname: "{{myec2_name}}"
+    ansible_host: "{{ ec2_created.instances.0.public_ip }}"
+    private_dns_name: "{{ ec2_created.instances.0.private_dns_name }}"
+    groups: "{{myec2.inventory_group}}"
+    ansible_user: "{{myec2.user}}"
+  when: not ec2_created|skipped
+
+

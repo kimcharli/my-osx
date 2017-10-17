@@ -1,0 +1,82 @@
+{
+
+"server": [
+    {
+        "cluster_id": "smlite-single-node-cluster",
+        "domain": "vcpe.pslab.juniper.net",
+        "id": "i-contrail-analytics-vm",
+        "parameters" : {
+            "partition": "/dev/vda",
+            "provision": {
+                "contrail": {
+                    "compute": {
+                        "dpdk": {
+                            "core_mask": "",
+                            "huge_pages": ""
+                        }
+                    }
+                }
+            }
+        },
+        "contrail": {
+            "control_data_interface": "ens4"
+        },
+        "network" : {
+            "interfaces": [
+                {
+                    "name": "ens3",
+                    "dhcp": false,
+                    "mac_address": "52:54:00:9c:f6:91",
+                    "ip_address": "10.13.132.197/23",
+                    "default_gateway": "10.13.132.1"
+                },
+                {
+                    "name": "ens4",
+                    "mac_address": "52:54:00:68:f6:43",
+                    "ip_address": "192.168.10.21/24"
+                }
+            ],
+            "management_interface": "ens3",
+            "provisioning": "kickstart"
+        },
+        "password": "vcpevcpe",
+        "ipmi_address": "",
+        "roles": [
+                 "contrail-controller",
+                 "contrail-analytics",
+                 "contrail-analyticsdb",
+                 "openstack",
+                 "contrail-compute" ]
+    }
+],
+"cluster": [
+    {
+        "id": "smlite-single-node-cluster",
+        "parameters": {
+            "provision": {
+                "openstack":{
+                    "openstack_manage_amqp": true
+                },
+                "kolla_globals": {
+                    "enable_haproxy": "no",
+                    "horizon_port": 8898,
+                    "kolla_base_distro": "ubuntu",
+                    "network_interface": "ens4",
+                    "neutron_external_interface": "ens3",
+                    "openstack_release": "4.0.1"
+                }
+            }
+        }
+    }
+],
+"image": [
+    {
+        "category": "package",
+        "id": "contrail_4_0_1_32",
+        "path": "/home/ubuntu/contrail-cloud-docker_4.0.1.0-32-newton_xenial.tgz",
+        "type": "contrail-ubuntu-package",
+        "version": "4.0.1-32"
+    }
+]
+}
+

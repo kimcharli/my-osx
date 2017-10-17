@@ -1,0 +1,78 @@
+######## CREATE Elastic Network Interface
+# http://docs.ansible.com/ansible/latest/ec2_eni_module.html
+
+- name: Find Elastic Network Interface via ec2-eni-find.yaml
+  include_role:
+    name: aws_ec2_eni
+    tasks_from: ec2-eni-find.yaml
+
+#- name: Prepare this_subnet_id
+#  set_fact:
+#    this_subnet_id: "{{vpcs.vpc_appformix.subnets.subnet_appfrmix.id}}"
+
+- name: Create Elastic Network Interface {{myeni_name}} under {{myvpc_name}}
+  ec2_eni:
+    validate_certs: "{{validate_certs}}"
+    region: "{{myvpc.region}}"
+    subnet_id: "{{vpcs[myvpc_name].subnets[myeni.subnet].id}}"
+    description: "{{myeni_name}}"
+    security_groups: "{{myeni.security_groups}}"
+    private_ip_address: "{{myeni.private_ip_address}}"
+#    delete_on_termination: yes
+  register: created_eni
+  when: myeni_id == 0
+
+#- debug: var=created_eni
+#ok: [localhost] => {
+#    "created_eni": {
+#        "changed": false,
+#        "interface": {
+#            "description": "apfmx_installer",
+#            "groups": {
+#                "sg-d639e5a5": "sg_installer"
+#            },
+#            "id": "eni-7e684bde",
+#            "mac_address": "12:62:2f:33:b0:fe",
+#            "owner_id": "807156892130",
+#            "private_ip_address": "10.10.0.11",
+#            "private_ip_addresses": [
+#                {
+#                    "primary_address": true,
+#                    "private_ip_address": "10.10.0.11"
+#                }
+#            ],
+#            "source_dest_check": true,
+#            "status": "available",
+#            "subnet_id": "subnet-c33a10ef",
+#            "vpc_id": "vpc-eec1d597"
+#        }
+#    }
+#}
+
+
+- name: Set myeni_id when Elastic Network Interface {{myeni_name}} in VPC {{myvpc_name}} if created
+  set_fact:
+    myeni_id_created: "{{created_eni.interface.id}}"
+  when: not created_eni|skipped
+
+#- debug: var=myeni_id_created
+
+- name: Register Elastic Network Interface ID when Elastic Network Interface {{myeni_name}} in VPC {{myvpc_name}} is created
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.enis.{{myeni_name}}.id
+    value: "{{myeni_id_created}}"
+  when: not created_eni|skipped
+
+- name: create EIP for "{{myeni_id}}"
+  ec2_eip:
+    validate_certs: "{{validate_certs}}"
+    region: "{{myvpc.region}}"
+    device_id: "{{myeni_id_created}}"
+    reuse_existing_ip_allowed: true
+    in_vpc: True
+  when:
+    - not created_eni|skipped
+    - myeni.assign_public_ip
+
+

@@ -1,0 +1,18 @@
+######## DELETE Elastic Network Interface
+# http://docs.ansible.com/ansible/latest/ec2_eni_module.html
+
+- name: Find Elastic Network Interface under {{mysubnet_name}} by including ec2-eni-find.yaml
+  include_role:
+    name: aws_ec2_eni
+    tasks_from: ec2-eni-find.yaml
+
+- name: Delete Elastic Network Interface {{myeni_name}} from {{myvpc_name}}
+  ec2_eni:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    force_detach: yes
+    eni_id: "{{myeni_id}}"
+    state: absent
+  when: myeni_id != 0
+
+

@@ -1,0 +1,32 @@
+# http://docs.ansible.com/ansible/latest/ec2_eni_facts_module.html
+# aws --region us-east-1 ec2 describe-network-interfaces
+
+
+- name: Sef Fact for Elastic Network Interface Components {{myeni_dict.key}} in VPC {{myvpc_name}}
+  set_fact:
+    myeni_name: "{{myeni_dict.key}}"
+    myeni: "{{myeni_dict.value}}"
+    myeni_id: 0
+
+- name: Find Elastic Network Interface Components {{myeni_name}} in Subnet {{mysubnet_name}} {{mysubnet_id}} of VPC {{myvpc_name}}
+  ec2_eni_facts:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    filters:
+      subnet-id: "{{mysubnet_id}}"
+      description: "{{myeni_name}}"
+  register: found_eni
+
+- debug: var=found_eni
+
+- name: set myeni_id when Elastic Network Interface {{myeni_name}} in VPC {{myvpc_name}} is found
+  set_fact:
+    myeni_id: "{{found_eni.network_interfaces.0.network_interface_id}}"
+  when: found_eni.network_interfaces|length > 0
+
+- name: Register Subnet ID when Elastic Network Interface {{myeni_name}} in VPC {{myvpc_name}} is found
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.subnets.{{mysubnet_name}}.enis.{{myeni_name}}.id
+    value: "{{myeni_id}}"
+  when: found_eni.network_interfaces|length > 0

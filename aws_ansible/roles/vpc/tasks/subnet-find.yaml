@@ -1,0 +1,28 @@
+#- name: Reset myvpc_id for {{vpcdict.key}}
+#  set_fact:
+#    myvpc_id: 0
+
+- name: Find Subnet {{mysubnet_name}} of VPC {{myvpc_name}}
+  ec2_vpc_subnet_facts:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    filters:
+      "tag:cc_version_tag": "{{cc_version_tag}}"
+      "tag:uuid_tag": "{{uuid_tag}}"
+      vpc-id: "{{myvpc_id}}"
+      "tag:Name": "{{mysubnet_name}}"
+  register: found_subnet
+
+#- debug: var=found_subnet
+
+- name: set mysubnet_id when Subnet {{mysubnet_name}} in VPC {{myvpc_name}} is found
+  set_fact:
+    mysubnet_id: "{{found_subnet.subnets.0.id}}"
+  when: found_subnet.subnets|length > 0
+
+- name: Register Subnet ID when Subnet {{mysubnet_name}} in VPC {{myvpc_name}} is found
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.subnets.{{mysubnet_name}}.id
+    value: "{{found_subnet.subnets.0.id}}"
+  when: found_subnet.subnets|length > 0

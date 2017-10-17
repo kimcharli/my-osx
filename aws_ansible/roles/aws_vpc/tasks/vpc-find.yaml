@@ -1,0 +1,34 @@
+# aws --region us-east-1 ec2 describe-vpcs --filters Name=tag:uuid_tag,Values=DB57D576-5F03-44BE-8575-EC9C3F70BBEC
+# aws --region us-east-1 ec2 describe-vpcs --filters Name=tag:uuid_tag,Values=*
+
+- name: Set Fact for VPC Components for {{vpcdict.key}}
+  set_fact:
+    myvpc_name: "{{vpcdict.key}}"
+    myvpc: "{{vpcdict.value}}"
+    myvpc_id: 0
+
+- name: Find VPC {{myvpc_name}}
+  ec2_vpc_net_facts:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    filters:
+      "tag:cc_version_tag": "{{cc_version_tag}}"
+      "tag:uuid_tag": "{{uuid_tag}}"
+      "tag:Name": "{{myvpc_name}}"
+  register: found_vpc
+
+#- debug: var=found_vpc
+#  tags:
+#    - debug
+
+- name: Set fact myvpc_id when VPC {{myvpc_name}} is found
+  set_fact:
+    myvpc_id: "{{found_vpc.vpcs.0.id}}"
+  when: found_vpc.vpcs|length > 0
+
+- name: Register VPC ID when VPC {{myvpc_name}} is found
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.id
+    value: "{{myvpc_id}}"
+  when: found_vpc.vpcs|length > 0

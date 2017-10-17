@@ -1,0 +1,8 @@
+TYPE="Ethernet"
+BOOTPROTO="none"
+NAME="eno2"
+DEVICE="eno2"
+ONBOOT="yes"
+NM_CONTROLLED=no
+BRIDGE=br-ctlplane
+

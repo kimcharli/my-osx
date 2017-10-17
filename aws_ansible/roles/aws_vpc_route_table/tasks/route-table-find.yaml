@@ -1,0 +1,34 @@
+# aws --region us-east-1 ec2 describe-route-tables
+# aws --region us-east-1 ec2 describe-route-tables --filter Name=tag:Name,Values=*
+
+
+- name: Set Fact To Delete Route Table Components {{routetable_dict.key}} in VPC {{myvpc_name}}
+  set_fact:
+    myroutetable_name: "{{routetable_dict.key}}"
+    myroutetable: "{{routetable_dict.value}}"
+    myroutetable_id: 0
+
+- name: Find Route Table {{myroutetable_name}} of VPC {{myvpc_name}}
+  ec2_vpc_route_table_facts:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    filters:
+#      "tag:cc_version_tag": "{{cc_version_tag}}"
+#      "tag:uuid_tag": "{{uuid_tag}}"
+      vpc-id: "{{myvpc_id}}"
+      "tag:Name": "{{myroutetable_name}}"
+  register: found_routetable
+
+#- debug: var=found_routetable
+
+- name: Set Fact myroutetable_id when Route Table {{myroutetable_name}} in VPC {{myvpc_name}} is found
+  set_fact:
+    myroutetable_id: "{{found_routetable.route_tables.0.id}}"
+  when: found_routetable.route_tables|length > 0
+
+- name: Register Route Table ID when Route Table {{myroutetable_name}} in VPC {{myvpc_name}} is found
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.routetables.{{myroutetable_name}}.id
+    value: "{{myroutetable_id}}"
+  when: found_routetable.route_tables|length > 0

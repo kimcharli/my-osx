@@ -1,0 +1,21 @@
+######## DELETE SECURITY GROUP
+
+#- name: Find Subnet for further process
+#  include_role:
+#    name: aws_ec2_group
+#    tasks_from: ec2-group-find.yaml
+
+# want to delete default, but it fails
+- name: Delete Security Group {{mysg_name}} from {{myvpc_name}}
+  ec2_group:
+    validate_certs: "{{validate_certs}}"
+    region: "{{myvpc.region}}"
+    vpc_id: "{{myvpc_id}}"
+#    group_id: "{{mysg_id}}"
+    name: "{{mysg_name}}"
+    state: absent
+  when:
+    - mysg_id != 0
+    - mysg_name != 'default'
+
+

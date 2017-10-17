@@ -1,0 +1,29 @@
+#- name: Reset myvpc_id for {{vpcdict.key}}
+#  set_fact:
+#    myvpc_id: 0
+
+- name: Find VPC {{myvpc_name}}
+  ec2_vpc_net_facts:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    filters:
+      "tag:cc_version_tag": "{{cc_version_tag}}"
+      "tag:uuid_tag": "{{uuid_tag}}"
+      "tag:Name": "{{myvpc_name}}"
+  register: found_vpc
+
+#- debug: var=found_vpc
+#  tags:
+#    - debug
+
+- name: Set fact myvpc_id when VPC {{myvpc_name}} is found
+  set_fact:
+    myvpc_id: "{{found_vpc.vpcs.0.id}}"
+  when: found_vpc.vpcs|length > 0
+
+- name: Register VPC ID when VPC {{myvpc_name}} is found
+  set_fact_any:
+    top: "{{vpcs}}"
+    name: vpcs.{{myvpc_name}}.id
+    value: "{{found_vpc.vpcs.0.id}}"
+  when: found_vpc.vpcs|length > 0

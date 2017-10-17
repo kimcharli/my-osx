@@ -1,0 +1,26 @@
+
+- name: Find Route Table {{myroutetable_name}} of VPC {{myvpc_name}}
+  ec2_vpc_route_table_facts:
+    region: "{{myvpc.region}}"
+    validate_certs: "{{validate_certs}}"
+    filters:
+#      "tag:cc_version_tag": "{{cc_version_tag}}"
+#      "tag:uuid_tag": "{{uuid_tag}}"
+      vpc-id: "{{myvpc_id}}"
+#      "tag:Name": "{{myroutetable_name}}"
+  register: found_routetable
+
+#- debug: var=found_routetable
+
+- name: Set Fact myroutetable_id when Route Table {{myroutetable_name}} in VPC {{myvpc_name}} is found
+  set_fact:
+    myroutetable_id: "{{found_routetable.route_tables.0.id}}"
+  when: found_routetable.route_tables|length > 0
+
+# commeting out to test MAIN table deletion
+#- name: Register Route Table ID when Route Table {{myroutetable_name}} in VPC {{myvpc_name}} is found
+#  set_fact_any:
+#    top: "{{vpcs}}"
+#    name: vpcs.{{myvpc_name}}.routetables.{{myroutetable_name}}.id
+#    value: "{{found_routetable.route_tables.0.id}}"
+#  when: found_routetable.route_tables|length > 0
