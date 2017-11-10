@@ -31,6 +31,8 @@ genisoimage -o init.iso -volid cidata -joliet -rock user-data meta-data network-
 cp ../images/ubuntu-14.04-server-cloudimg-amd64-disk1.img $VM_NAME.qcow2
 qemu-img resize $VM_NAME.qcow2 +$DISKSIZE
 
+# --network bridge=$BRIDGE1,mac=$MAC1,model=rtl8139
+
 virt-install \
 --virt-type kvm \
 --name $VM_NAME  \
