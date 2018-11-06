@@ -1,0 +1,12 @@
+#!/bin/bash
+
+MYLOGFOLDER=/Users/ckim/Documents/logs
+
+MYHOST=$1
+mkdir -p $MYLOGFOLDER
+MYLOGFILE=$MYLOGFOLDER/$1-$(date +%Y%m%d-%H%M).log
+ssh $@ | tee $MYLOGFILE
+
+
+
+
