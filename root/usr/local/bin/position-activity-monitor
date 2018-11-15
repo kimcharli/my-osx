@@ -1,0 +1,3 @@
+#!/bin/bash
+osascript /usr/local/bin/position-activity-monitor.scpt
+
