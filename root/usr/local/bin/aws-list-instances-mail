@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/local/bin/aws-list-instances | /usr/bin/mail -s aws-list-instances ckim@juniper.net

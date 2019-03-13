@@ -9,6 +9,9 @@ alias server15_tun0='sudo ssh -Tf -w 0:0 server15 "ip a add 192.168.123.1/24 dev
 
 alias textwrangler='open -a TextWrangler'
 
+#
+alias awscli='docker run --rm -v /Users/ckim/.aws:/root/.aws:ro awscli aws'
+
 #export CLICOLOR=1
 #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
 #export LSCOLORS=ExFxBxDxCxegedabagacad
