@@ -1,9 +1,0 @@
-[pssvlcontrail]
-ch02 ansible_host=10.85.86.72
-ch03 ansible_host=10.85.86.73
-
-
-[pssvlcontrail:vars]
-ansible_user=contrail
-#ansible_python_interpreter=/Users/ckim/ENV/ansible/bin/python
-
