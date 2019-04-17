@@ -1,0 +1,16 @@
+# usage: itermocil fabric-quincy
+# install: brew install TomAnthony/brews/itermocil
+# git: https://github.com/TomAnthony/itermocil
+---
+windows:
+  - name: fabric_quincy
+    layout: tiled
+    root: ~
+    panes:
+      - ssh qfx10k-1.pslab
+      - ssh qfx10k-2.pslab
+      - ssh qfx1.pslab
+      - ssh qfx2.pslab
+      - ssh mx1.pslab
+      - ssh mx2.pslab
+
