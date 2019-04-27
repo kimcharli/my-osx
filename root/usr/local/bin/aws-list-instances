@@ -1,4 +1,5 @@
 #!/bin/bash
 AWSCLI='/usr/local/bin/docker run --rm -v /Users/ckim/.aws:/root/.aws:ro awscli aws'
 JQPATH=/usr/local/bin/jq
-for RRR in $($AWSCLI ec2 describe-regions  --query 'Regions[].{Name:RegionName}' --output text) ; do $AWSCLI --region $RRR ec2 describe-instances --query 'Reservations[].Instances[].{az:Placement.AvailabilityZone,id:InstanceId,type:InstanceType,name:Tags[?Key==`Name`]|[0].Value,state:State.Name,launchedAt:LaunchTime}' | $JQPATH -c '.[]' ; done
+#for RRR in $($AWSCLI ec2 describe-regions  --query 'Regions[].{Name:RegionName}' --output text) ; do $AWSCLI --region $RRR ec2 describe-instances --query 'Reservations[].Instances[].{az:Placement.AvailabilityZone,id:InstanceId,type:InstanceType,name:Tags[?Key==`Name`]|[0].Value,state:State.Name,launchedAt:LaunchTime}' | $JQPATH -c '.[]' ; done
+for RRR in $($AWSCLI ec2 describe-regions  --query 'Regions[].{Name:RegionName}' --output text) ; do $AWSCLI --region $RRR ec2 describe-instances --query 'Reservations[].Instances[].{az:Placement.AvailabilityZone,id:InstanceId,type:InstanceType,name:Tags[?Key==`Name`]|[0].Value,state:State.Name,launchedAt:LaunchTime}' | jq ' .[] | "type:" + .type + ", id:" + .id + ", AZ:" + .az + ", Name:" + .name + ", State:" + .state + ", LaunchedAt:" + .launchedAt ' ; done
