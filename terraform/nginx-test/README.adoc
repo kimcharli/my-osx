@@ -1,0 +1,29 @@
+# nginx-test
+:toc:
+
+## run
+
+terraform init
+
+terraform plan
+
+terraform apply
+
+----
+ckim-mbp:~ ckim$ docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                            NAMES
+2d431a6e0d30        bedece1f06cc        "nginx -g 'daemon of…"   29 seconds ago      Up 28 seconds       443/tcp, 0.0.0.0:32770->80/tcp   nginx-server-1
+98e011c097ba        bedece1f06cc        "nginx -g 'daemon of…"   30 seconds ago      Up 29 seconds       443/tcp, 0.0.0.0:32769->80/tcp   nginx-server-2
+67237e6ec052        grafana/grafana     "/run.sh"                3 months ago        Up 30 hours         0.0.0.0:3000->3000/tcp           grafana
+ckim-mbp:~ ckim$
+----
+
+destroy
+----
+ckim-mbp:nginx-test ckim$ terraform destroy
+
+ckim-mbp:nginx-test ckim$ docker ps
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                    NAMES
+67237e6ec052        grafana/grafana     "/run.sh"           3 months ago        Up 30 hours         0.0.0.0:3000->3000/tcp   grafana
+ckim-mbp:nginx-test ckim$
+----
