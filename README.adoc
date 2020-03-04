@@ -1,0 +1,138 @@
+= my-osx
+:toc:
+:sectnums:
+
+OSX setup instruction and tools
+
+== initial setup
+
+status
+----
+ckim-mbp:~ ckim$ df -h /
+Filesystem     Size   Used  Avail Capacity iused      ifree %iused  Mounted on
+/dev/disk1s5  466Gi   10Gi  430Gi     3%  484165 4881968715    0%   /
+ckim-mbp:~ ckim$
+----
+
+- activate touch id
+- enable sudo by /etc/sudoers.d/ckim
+
+- recover resolver and others
+----
+ckim-mbp:~ ckim$ tar ztf OneDrive\ -\ Juniper\ Networks\,\ Inc/ssh.tgz
+ckim-mbp:~ ckim$ sudo mkdir /etc/resolver/
+ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/resolver.tgz
+ckim-mbp:~ ckim$ sudo mv etc/resolver/ /etc
+ckim-mbp:~ ckim$ sudo rm -rf etc/
+ckim-mbp:~ ckim$
+ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
+----
+
+== install/setup Apps
+
+- Outlook
+- Crashplan
+- Dishpane
+- chrome
+- Evernote
+- Dropbox
+- Start OneDrive
+- PyCharm
+- install homebrew - https://brew.sh/
+----
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+----
+- create venv
+----
+ckim-mbp:~ ckim$ python3 -m venv venv/p3-ansible
+ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
+(p3-ansible) ckim-mbp:~ ckim$ pip3 install -r ansible/requirements3.txt
+----
+
+- install iTerm2 - https://iterm2.com/downloads/stable/iTerm2-3_3_9.zip
+----
+mv Downloads/iTerm.app/ /Applications/
+curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash
+----
+
+- VMware
+- install Zoom
+- install Wireshark
+- install Omnigraffle
+- VitalSource Bookshelf
+- Wondershare FilmoraPro
+- Snagit 2020
+- Insomnia
+- Skype
+- Slack
+
+- Kindle
+
+
+
+
+== Products
+link:SRV-vSRX[SRX vSRX]
+
+== local httpd
+
+=== terminate and start up
+```bash
+ckim-mbp:my-osx.wiki ckim$ cd docker-compose/all/
+ckim-mbp:all ckim$ docker-compose down
+Stopping all_nginx_1 ... done
+Removing all_nginx_1 ... done
+ckim-mbp:all ckim$ docker-compose up -d
+Creating all_nginx_1 ... done
+ckim-mbp:all ckim$
+```
+
+### setup markdown reader environment
+
+Attemped https://hub.docker.com/r/gitlab/gitlab-ce/, but it took heavy CPU load.
+
+#### once: clone strapdown
+```bash
+ckim-mbp:~ ckim$ cd PycharmProjects/
+ckim-mbp:PycharmProjects ckim$ git clone git@github.com:kimcharli/strapdown.git
+Cloning into 'strapdown'...
+remote: Counting objects: 281, done.
+remote: Total 281 (delta 0), reused 0 (delta 0), pack-reused 281
+Receiving objects: 100% (281/281), 410.66 KiB | 391.00 KiB/s, done.
+Resolving deltas: 100% (139/139), done.
+ckim-mbp:PycharmProjects ckim$
+ckim-mbp:PycharmProjects ckim$ cp -r strapdown/v/0.2/ my-osx.wiki/js/strapdown
+
+```
+
+#### interim
+for <file>.md, create <file>.html from <md-template>.html by replacing <context/> with the content of <file>.md
+
+#### TODO: create ssi or fastcgi
+
+
+
+## link:vpn-in-centos[vpn in centos]
+
+## link:ssh-tunnel[ssh tunnel]
+
+## mac docker
+https://docs.docker.com/docker-for-mac/
+
+some commands
+----
+docker -H unix:///var/run/docker.sock ps
+
+curl --unix-socket /var/run/docker.sock http:///localhost/version
+----
+
+tested for https://raw.githubusercontent.com/kimcharli/my-osx/master/terraform/nginx-test/main.tf
+
+////
+:sourcedir: __special
+include::{sourcedir}/md-renderer.html[]
+////
+
+// uri include is not supported - without allow-uri-read
+// include::https://raw.githubusercontent.com/kimcharli/my-osx/master/terraform/nginx-test/main.tf[]
+
