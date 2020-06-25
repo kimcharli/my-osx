@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# docker pull kimcharli/awscli
-# docker tag kimcharli/awscli awscli
-
-AWSCLI='/usr/local/bin/docker run --rm -v /Users/ckim/.aws:/root/.aws:ro awscli aws'
+AWSCLI="docker run -v $HOME/.aws:/root/.aws --rm amazon/aws-cli"
 JQPATH=/usr/local/bin/jq
 for RRR in $($AWSCLI ec2 describe-regions --query 'Regions[].{Name:RegionName}' --output text) ; do $AWSCLI --region $RRR ec2 describe-instances --query 'Reservations[].Instances[].{az:Placement.AvailabilityZone,id:InstanceId,type:InstanceType,name:Tags[?Key==`Name`]|[0].Value,state:State.Name,launchedAt:LaunchTime}' | ${JQPATH} -r ' .[] | "id:" + .id + ", LaunchedAt:" + .launchedAt + ", type:" + .type + ", AZ:" + .az + ", Name:" + .name + ", State:" + .state ' ; done
