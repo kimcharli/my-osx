@@ -1,4 +1,4 @@
 #!/bin/bash
 
-docker run -v $HOME/.aws:/root/.aws --rm amazon/aws-cli $@
+docker run -v $HOME/.aws:/root/.aws -v $HOME/.kube:/root/.kube --rm amazon/aws-cli $@
 
