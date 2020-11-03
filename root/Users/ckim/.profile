@@ -1,6 +1,7 @@
 
 alias ls='ls -G'
 alias ll='ls -alF'
+alias rsync-ssh='rsync -avz -e ssh'
 
 # install go by 'brew install golang'
 export GOPATH=~/go
