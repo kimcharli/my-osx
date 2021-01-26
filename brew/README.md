@@ -11,6 +11,10 @@ Add the following line to your ~/.bash_profile:
 ```
 brew install docker-completion
 
+## helm
+
+brew install helm
+helm plugin install https://github.com/databus23/helm-diff
 
 
 
