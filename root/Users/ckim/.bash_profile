@@ -25,3 +25,6 @@ export KOPS_STATE_STORE=s3://clusters.k8-dev.pslab.org
 #export PATH="/usr/local/opt/icu4c/bin:$PATH"
 #export PATH="/usr/local/opt/icu4c/sbin:$PATH"
 export PATH="/usr/local/sbin:$PATH"
+
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
