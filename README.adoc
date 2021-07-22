@@ -32,7 +32,7 @@ ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
 
 - Outlook
 - Crashplan
-- Dishpane
+- Dashlane (https://www.dashlane.com/)
 - chrome
 - Evernote
 - Dropbox
