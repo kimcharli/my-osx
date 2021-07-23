@@ -15,6 +15,10 @@ ckim-mbp:~ ckim$
 ----
 
 - activate touch id
+- create ssh key pair
+----
+ssh-keygen -b 2048 -t rsa
+----
 - enable passwordless sudo
 ----
 sudo -i
@@ -83,6 +87,9 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 - Dashlane
 - Evernote
 
+=== Code Extensions
+- Shell Command: Install 'code' commmand in PATH
+- AsciiDoc
 
 == Products
 link:SRV-vSRX[SRX vSRX]
