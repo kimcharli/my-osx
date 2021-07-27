@@ -39,40 +39,41 @@ ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
 
 == install/setup Apps
 
-- Outlook
-- Crashplan
+* Outlook
 
-- Dashlane (https://www.dashlane.com/)
-- Chrome - keep in dock
-- Firefox (for proxy)
-- Evernote - keep in dock
-- Homebrew - https://brew.sh/
-  - Xcode
+* Dashlane (https://www.dashlane.com/)
+* Chrome - keep in dock
+* Firefox (for proxy)
+* Evernote - keep in dock
+* Homebrew - https://brew.sh/
+** Xcode
 ----
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ----
-- Visual Studio Code
-- iTerm2 - https://iterm2.com/downloads.html
+* Visual Studio Code
+* iTerm2 - https://iterm2.com/downloads.html
 ----
 mv Downloads/iTerm.app/ /Applications/
 curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash
 ----
-- SecureCRT
-  - backup/restore /Users/ckim/Documents/securecrt
-  - Global Options/General/Configuration Paths: /Users/ckim/Documents/securecrt/config
-  - Default Session Options/Terminal/Log File/Log file name: /Users/ckim/Documents/securecrt/logs/%S-%Y%M%D-%h%m.log
+* SecureCRT
+** backup/restore /Users/ckim/Documents/securecrt
+** Global Options/General/Configuration Paths: /Users/ckim/Documents/securecrt/config
+** Default Session Options/Terminal/Log File/Log file name: /Users/ckim/Documents/securecrt/logs/%S-%Y%M%D-%h%m.log
 
-- VMware Fusion (BigSur requires 12)
-  - SecureCRT
-    - backup /Users/ckim/win10-vm and enable share
-    - Global Options/General/Configuration Paths: Z:\win10-vm\securecrt
-    - Default Session Options/Terminal/Log File/Log file name: Z:\win10-vm\logs\%S-%Y%M%D-%h%m.log
+* VMware Fusion (BigSur requires 12)
+** SecureCRT
+*** backup /Users/ckim/win10-vm and enable share
+*** Global Options/General/Configuration Paths: Z:\win10-vm\securecrt
+*** Default Session Options/Terminal/Log File/Log file name: Z:\win10-vm\logs\%S-%Y%M%D-%h%m.log
 
-- Snagit - https://myaccount.techsmith.com/MyProducts/Software
-- VitalSource Bookshelf
-- Kindle
-- Dropbox
-- Google Drive
+* Snagit - https://myaccount.techsmith.com/MyProducts/Software
+* VitalSource Bookshelf
+* Kindle
+* Dropbox
+* Google Drive
+* Docker
+** enable kubernetes
 
 - Start OneDrive
 - create venv
@@ -85,17 +86,20 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 
 - Insomnia
 
+- Pair Android message with messages.google.com
 
 === In cases and Deprecated
 - Zoom
 - Omnigraffle
 - Skype
 - Slack
+* Crashplan
 
 
 === Chrome Extensions
 - Dashlane
 - Evernote
+- Grammarly
 
 === Code Extensions
 - Shell Command: Install 'code' commmand in PATH
@@ -103,6 +107,7 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 
 === Brew apps
 - brew install --cask wireshark
+- brew install kubectl kubectx kubecm kubecfg helm
 
 == Products
 link:SRV-vSRX[SRX vSRX]
