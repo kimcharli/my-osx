@@ -75,7 +75,8 @@ curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash
 * Docker
 ** enable kubernetes
 
-- Start OneDrive
+* Start OneDrive
+
 - create venv
 ----
 ckim-mbp:~ ckim$ python3 -m venv venv/p3-ansible
@@ -94,7 +95,7 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 - Skype
 - Slack
 * Crashplan
-
+* RealVNC - Safari supports vnc natively.
 
 === Chrome Extensions
 - Dashlane
@@ -104,6 +105,9 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 === Code Extensions
 - Shell Command: Install 'code' commmand in PATH
 - AsciiDoc
+- Remote Container
+- Remote SSH
+
 
 === Brew apps
 - brew install --cask wireshark
