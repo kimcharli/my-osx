@@ -119,6 +119,12 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 - brew install --cask wireshark
 - brew install kubectl kubectx kubecm kubecfg helm
 
+== Device Drivers
+
+=== Printer/Scanner
+* HP
+
+
 == Products
 link:SRV-vSRX[SRX vSRX]
 
