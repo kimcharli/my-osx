@@ -77,7 +77,7 @@ curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash
 
 * Start OneDrive
 
-- create venv
+* create venv
 ----
 ckim-mbp:~ ckim$ python3 -m venv venv/p3-ansible
 ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
@@ -87,7 +87,6 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 
 - Insomnia
 
-- Pair Android message with messages.google.com
 
 === In cases and Deprecated
 - Zoom
@@ -101,6 +100,7 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 * Dashlane
 * Evernote
 * Grammarly
+* Pair Android message with messages.google.com
 
 === Safari Extensions
 * Dashlane for Safari
@@ -116,8 +116,14 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 
 
 === Brew apps
-- brew install --cask wireshark
-- brew install kubectl kubectx kubecm kubecfg helm
+----
+brew install --cask wireshark
+brew install kubectl kubectx kubecm kubecfg helm
+brew install awscli
+----
+
+=== Mac App Store
+* KakaoTalk
 
 == Device Drivers
 
