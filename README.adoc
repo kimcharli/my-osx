@@ -76,6 +76,7 @@ curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash
 ** enable kubernetes
 
 * Start OneDrive
+* Raindrop.io
 
 * create venv
 ----
@@ -85,14 +86,14 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 ----
 
 
-- Insomnia
 
 
 === In cases and Deprecated
-- Zoom
-- Omnigraffle
-- Skype
-- Slack
+* Insomnia
+* Zoom
+* Omnigraffle
+* Skype
+* Slack
 * Crashplan
 * RealVNC - Safari supports vnc natively.
 
@@ -101,6 +102,7 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 * Evernote
 * Grammarly
 * Pair Android message with messages.google.com
+* Raindrop.io
 
 === Safari Extensions
 * Dashlane for Safari
