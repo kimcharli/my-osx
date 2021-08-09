@@ -112,11 +112,11 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 * Raindrop.io
 
 === Code Extensions
-- Shell Command: Install 'code' commmand in PATH
-- AsciiDoc
-- Remote Container
-- Remote SSH
-
+* Shell Command: Install 'code' commmand in PATH
+* AsciiDoc
+* Remote Container
+* Remote SSH
+* Python
 
 === Brew apps
 ----
