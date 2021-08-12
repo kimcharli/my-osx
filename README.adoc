@@ -123,6 +123,7 @@ ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 brew install --cask wireshark
 brew install kubectl kubectx kubecm kubecfg helm
 brew install awscli
+brew install tree
 ----
 
 === Mac App Store
