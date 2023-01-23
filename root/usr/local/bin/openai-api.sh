@@ -21,7 +21,7 @@ generate_post_data() {
     "model": "text-davinci-003",
     "prompt": "$PROMPT_STRING",
     "temperature": 0,
-    "max_tokens":7
+    "max_tokens":256
 }
 EOF
 }
