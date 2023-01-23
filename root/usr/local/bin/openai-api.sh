@@ -3,6 +3,9 @@
 # 2023/01/23 https://github.com/kimcharli/my-osx/tree/master/root/usr/local/bin/openai-api.sh
 
 # API to talk to openai chatGPT 
+# Requirements:
+#   The API key in a file TOKENFILE # https://beta.openai.com/account/api-keys
+#   curl and jq
 
 usage() {
     echo Usage: $0 "<question string>"    
