@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # 2023/01/23 https://github.com/kimcharli/my-osx/tree/master/root/usr/local/bin/openai-api.sh
+# 2023/03/08 update medel to gpt-3.5-turbo from text-davinci-003 based on the ChatGPT announcement
 
-# API to talk to openai chatGPT 
+# API to talk to openai chatGPT jo
 # Requirements:
 #   The API key in a file TOKENFILE # https://beta.openai.com/account/api-keys
 #   curl and jq
@@ -11,23 +12,41 @@ usage() {
     echo Usage: $0 "<question string>"    
 }
 
+# TOKENFILE example in secure location
+# Authorization: Bearer sk-lTiwa0d...ZSNybz
+# OpenAI-Organization: org-c3uB...XIX
+# from https://platform.openai.com/account/api-keys
+# from https://platform.openai.com/account/org-settings
 TOKENFILE="$HOME/.ssh/openai-google-key"
-OPEN_API_KEY=$(cat $TOKENFILE)
-AUTHORIZATION_HEADER="Authorization: Bearer $OPEN_API_KEY"
-ORGANIZATION_HEADER="OpenAI-Organization: org-c3uBW0PFGnfkQSuwX5cikXIX"
+AUTHORIZATION_HEADER=$(grep Authorization $TOKENFILE)
+ORGANIZATION_HEADER=$(grep OpenAI-Organization $TOKENFILE)
 JSON_HEADER="Content-Type: application/json"
+
 PROMPT_STRING="'$*'"
+# AI_MODEL=text-davinci-003
+AI_MODEL=gpt-3.5-turbo
+
 
 generate_post_data() {
     cat <<EOF
 {
-    "model": "text-davinci-003",
+    "model": "$AI_MODEL",
     "prompt": "$PROMPT_STRING",
     "temperature": 0,
     "max_tokens":256
 }
 EOF
 }
+
+generate_post_data_v2() {
+    cat <<EOF
+{
+    "model": "$AI_MODEL",
+    "messages": [{"role": "user", "content": "$PROMPT_STRING"}]
+}
+EOF
+}
+
 
 display_input() {
     echo PROMPT_STRING = "$PROMPT_STRING"
@@ -60,6 +79,14 @@ get_completions() {
     -d "$(generate_post_data)"
 }
 
+get_completions_v2() {
+    curl -s -X POST https://api.openai.com/v1/chat/completions \
+    -H "$AUTHORIZATION_HEADER" \
+    -H "$JSON_HEADER" \
+    -d "$(generate_post_data_v2)"
+}
+
+
 get_playground_completions() {
     curl -X POST https://api.openai.com/v1/engines/text-davinci-003-playground/completions\
     -H "$AUTHORIZATION_HEADER" \
@@ -76,6 +103,7 @@ fi
 
 echo Prompt: "$PROMPT_STRING"
 echo ====
-get_completions | jq -r '.choices[] | .text'
+# get_completions | jq -r '.choices[] | .text'
+get_completions_v2 | jq -r '.choices[] | .message.content '
 echo ====
 get_credit_grants | jq -c '.grants.data[] | { "used_amount": .used_amount, "grant_amount": .grant_amount }'
