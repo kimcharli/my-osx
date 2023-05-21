@@ -42,7 +42,15 @@ ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
 * Outlook
 
 * Dashlane (https://www.dashlane.com/)
+
 * Chrome - keep in dock
+** SwitchyOmega for proxy
+** Dashlane
+** Evenote Web Clipper
+** Google Voice
+** Grammarly
+** Pocket
+
 * Firefox (for proxy)
 * Evernote - keep in dock
 * Homebrew - https://brew.sh/
@@ -51,6 +59,8 @@ ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ----
 * Visual Studio Code
+** Cmd+Shift+P: Shell Command: Install 'code' commmand in PATH
+
 * iTerm2 - https://iterm2.com/downloads.html
 ----
 mv Downloads/iTerm.app/ /Applications/
@@ -87,6 +97,10 @@ ckim-mbp:~ ckim$ python3 -m venv venv/p3-ansible
 ckim-mbp:~ ckim$ source ~/venv/p3-ansible/bin/activate
 (p3-ansible) ckim-mbp:~ ckim$ pip3 install -r ansible/requirements3.txt
 ----
+
+* Cisco AnyConnect
+** set profiles
+
 
 
 
