@@ -57,7 +57,7 @@ ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
 * Evernote - keep in dock
 * Homebrew - https://brew.sh/
 ** Xcode
-** watch
+** watch terraform
 ** --cask wireshark
 
 * Visual Studio Code
