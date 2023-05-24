@@ -1,9 +1,5 @@
 
 
-# some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
 
 alias server15_tun0='sudo ssh -Tf -w 0:0 server15 "ip a add 192.168.123.1/24 dev tun0 && ip l set up tun0 " ; sudo ifconfig tun0 192.168.123.2 192.168.123.1  ; sudo route -n add 192.168.122.0/24 192.168.123.1'
 
