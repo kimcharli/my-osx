@@ -57,12 +57,13 @@ ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
 * Evernote - keep in dock
 * Homebrew - https://brew.sh/
 ** Xcode
-** watch terraform
+** watch terraform golang tree
 ** --cask wireshark
 
 * Visual Studio Code
 ** Cmd+Shift+P: Shell Command: Install 'code' commmand in PATH
-** AsciiDoc
+** AsciiDoc, go, HashiCorp Terraform, Python
+** GitHub Copilot Nightly + GitHub Copilot Labs
 
 * iTerm2 - https://iterm2.com/downloads.html
 ----
