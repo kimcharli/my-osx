@@ -1,6 +1,7 @@
 #!/bin/bash
 
 EC2NAME=apstra-412
+
 NOVERIFYSSL=--no-verify-ssl 
 
 EC2STATUS=$(aws $NOVERIFYSSL ec2 describe-instances \
