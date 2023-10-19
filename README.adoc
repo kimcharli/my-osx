@@ -60,6 +60,7 @@ ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
 ** watch terraform golang tree
 ** --cask wireshark
 
+
 * Visual Studio Code
 ** Cmd+Shift+P: Shell Command: Install 'code' commmand in PATH
 ** AsciiDoc, go, HashiCorp Terraform, Python
@@ -70,6 +71,7 @@ ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
 mv Downloads/iTerm.app/ /Applications/
 curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash
 ----
+
 * SecureCRT
 ** backup/restore /Users/ckim/Documents/securecrt
 ** Global Options/General/Configuration Paths: /Users/ckim/Documents/securecrt/config
@@ -88,6 +90,24 @@ curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash
 * Google Drive
 * Docker
 ** enable kubernetes
+
+* python poetry
+```bash
+mkdir -p /Users/ckim/Library/Application\ Support/pypoetry/venv/
+curl -sSL https://install.python-poetry.org | sed 's/symlinks=False/symlinks=True/' | python3 -
+```
+
+$HOME/.zshrc
+```bash
+export PATH=$HOME/.local/bin:$PATH
+```
+
+vscode extension: Python Poetry
+
+```bash
+poetry new --name projectname --src projectroot
+```
+
 
 * Start OneDrive
 * Raindrop.io

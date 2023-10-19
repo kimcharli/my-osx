@@ -6,10 +6,8 @@ if [ -z "$SSMPATH" ]; then
   exit 1
 fi
 
-ENVFILE=.env
 
-rm -f $ENVFILE
-
+echo SSMPATH=$SSMPATH
 aws ssm get-parameters-by-path \
   --path "$SSMPATH" \
   --with-decryption \
@@ -17,9 +15,8 @@ aws ssm get-parameters-by-path \
   --output text |
   while read line
   do
-    name=$(echo ${line} | cut -f 1 -d ' ' | sed "s|$SSMPATH||")
+    name=$(echo ${line} | cut -f 1 -d ' ' | sed -e "s|$SSMPATH||")
     value=$(echo ${line} | cut -f 2 -d ' ')
-    echo "${name}=${value}" >> $ENVFILE
+    echo "${name}=${value}"
   done
-
 
