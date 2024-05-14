@@ -1,7 +1,0 @@
-#!/bin/bash
-
-MYCAST=$1-$(date +%Y%m%d-%H%M).cast
-set -x
-asciinema rec -i 2.5 Downloads/Apps/asciinema/$MYCAST
-
-

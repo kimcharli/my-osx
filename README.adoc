@@ -66,6 +66,20 @@ ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
 ** AsciiDoc, go, HashiCorp Terraform, Python
 ** GitHub Copilot Nightly + GitHub Copilot Labs
 
+* GNU stow
+```
+brew install stow
+````
+
+Private: https://github.com/kimcharli/ckim-dotfiles
+```
+git clone https://github.com/kimcharli/ckim-dotfiles $HOME/dotfiles
+cd $HOME/dotfiles
+scripts/restore.sh
+```
+
+
+
 * iTerm2 - https://iterm2.com/downloads.html
 ----
 mv Downloads/iTerm.app/ /Applications/

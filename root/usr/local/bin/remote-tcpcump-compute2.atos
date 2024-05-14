@@ -1,4 +1,0 @@
-#!/bin/bash
-# a variation of remote-tcpdump
-set -x
-ssh -T compute2.atos sudo /usr/sbin/tcpdump -l -U -s 2000 -i bond1  -w - | wireshark -k -i -

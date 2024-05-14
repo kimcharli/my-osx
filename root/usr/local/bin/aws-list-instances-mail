@@ -1,3 +1,0 @@
-#!/bin/bash
-( date && /usr/local/bin/aws-list-instances ) | tee -a /tmp/aws-list-instances.log | /usr/bin/mail -s aws-list-instances ckim@juniper.net
-

@@ -1,5 +1,0 @@
-#!/bin/bash
-REMOTEHOST=$1
-REMOTEINTF=$2
-ADDFILTER=$3
-ssh -T $REMOTEHOST sudo /usr/sbin/tcpdump -l -U -s 2000 -i $REMOTEINTF -w - not port 22 $ADDFILTER | Wireshark -k -i -
