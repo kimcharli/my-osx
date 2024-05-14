@@ -69,7 +69,7 @@ ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
 * GNU stow
 ```
 brew install stow
-````
+```
 
 Private: https://github.com/kimcharli/ckim-dotfiles
 ```
@@ -111,10 +111,6 @@ mkdir -p /Users/ckim/Library/Application\ Support/pypoetry/venv/
 curl -sSL https://install.python-poetry.org | sed 's/symlinks=False/symlinks=True/' | python3 -
 ```
 
-$HOME/.zshrc
-```bash
-export PATH=$HOME/.local/bin:$PATH
-```
 
 vscode extension: Python Poetry
 
@@ -167,7 +163,7 @@ poetry new --name projectname --src projectroot
 
 === Brew apps
 ----
-brew install --cask wireshark
+brew install wireshark
 brew install kubectl kubectx kubecm kubecfg helm
 brew install awscli
 brew install tree golang jq
@@ -203,19 +199,7 @@ ckim-mbp:all ckim$
 
 Attemped https://hub.docker.com/r/gitlab/gitlab-ce/, but it took heavy CPU load.
 
-#### once: clone strapdown
-```bash
-ckim-mbp:~ ckim$ cd PycharmProjects/
-ckim-mbp:PycharmProjects ckim$ git clone git@github.com:kimcharli/strapdown.git
-Cloning into 'strapdown'...
-remote: Counting objects: 281, done.
-remote: Total 281 (delta 0), reused 0 (delta 0), pack-reused 281
-Receiving objects: 100% (281/281), 410.66 KiB | 391.00 KiB/s, done.
-Resolving deltas: 100% (139/139), done.
-ckim-mbp:PycharmProjects ckim$
-ckim-mbp:PycharmProjects ckim$ cp -r strapdown/v/0.2/ my-osx.wiki/js/strapdown
 
-```
 
 #### interim
 for <file>.md, create <file>.html from <md-template>.html by replacing <context/> with the content of <file>.md
