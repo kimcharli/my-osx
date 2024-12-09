@@ -30,31 +30,11 @@ def main():
     # our Screen's Synchronous flag to true.
     tab.Screen.Synchronous = True
 
-    tab.Screen.Send("cli\r")
+    tab.Screen.WaitForString("%")
+    tab.Screen.Send("echo # junos_cli\n")
+    tab.Screen.WaitForString("%")
+    tab.Screen.Send("cli\n")
 
-    while False:
-        # WaitForStrings as called here will wait for an occurance of one
-        # of the strings that are part of the g_vWaitFors array defined
-        # above.  When one of the strings is detected, the index of the
-        # string withint the array will be returned as the value of the
-        # nIndex variable.  Note that nIndex will be 1-based, rather than
-        # 0-based.
-        nIndex = tab.Screen.WaitForStrings(g_vWaitFors)
-
-        # Now that we've discovered text in the "nIndex"th item of our array,
-        # send the "nIndex"th item of the g_vRespondWiths array:
-        tab.Screen.Send(g_vRespondWiths[nIndex] + "\n")
-
-        # Now that we've sent the corresponding command, loop back up to the
-        # top and wait again for another trigger string to appear...
-
-g_vWaitFors = [
-    "%"
-]
-
-g_vRespondWiths = [
-    "cli\r"
-]
 
 main()
 
