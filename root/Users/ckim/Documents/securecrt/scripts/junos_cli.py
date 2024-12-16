@@ -1,9 +1,12 @@
 #$language = "Python3"
 #$interface = "1.0"
 
+# https://www.vandyke.com/support/tips/scripting/scripting_essentials.pdf
+
 import SecureCRT
 import sys
 import platform
+import os
 
 def info():
     crt.Dialog.MessageBox(
@@ -16,9 +19,27 @@ def info():
 
 def main():
     #info()
-    tab = crt.GetScriptTab()
+    script_path = os.path.realpath(__file__)
 
-    if tab.Session.Connected != True:
+	# Here is where we will set the value of the string that will indicate that
+	# we have reached the end of the data that we wanted capture with the
+	# ReadString method.
+    szPrompt = "%"
+
+	# Using GetScriptTab() will make this script 'tab safe' in that all of the
+	# script's functionality will be carried out on the correct tab. From here
+	# on out we'll use the objTab object instead of the crt object.
+    objTab = crt.GetScriptTab()
+    objTab.Screen.Synchronous = True
+
+	# Instruct WaitForString and ReadString to ignore escape sequences when
+	# detecting and capturing data received from the remote (this doesn't
+	# affect the way the data is displayed to the screen, only how it is handled
+	# by the WaitForString, WaitForStrings, and ReadString methods associated
+	# with the Screen object.
+    objTab.Screen.IgnoreEscape = True
+
+    if objTab.Session.Connected != True:
         crt.Dialog.MessageBox(
             "Error.\n" +
             "This script was designed to be launched after a valid "+
@@ -26,15 +47,21 @@ def main():
             "Please connect to a remote machine before running this script.")
         return
 
-    # Ensure that we don't "miss" data coming from the remote by setting
-    # our Screen's Synchronous flag to true.
-    tab.Screen.Synchronous = True
-
-    tab.Screen.WaitForString("%")
-    tab.Screen.Send("echo # junos_cli\n")
-    tab.Screen.WaitForString("%")
-    tab.Screen.Send("cli\n")
-
+    try:
+        objTab.Screen.WaitForString(szPrompt)
+        objTab.Screen.Send(f"echo # logon script: {script_path}\n")
+        objTab.Screen.WaitForString(szPrompt)
+        objTab.Screen.Send("cli\n")
+    except SecureCRT.ScriptError as e:
+        pass
+    except Exception as e:
+        crt.Dialog.MessageBox(
+            "Error.\n" +
+            "An error occurred while attempting to send data to the remote.\n\n" +
+            "Error Description:\n" +
+            f"{type(e)}\n" +
+            str(e))
+        return
 
 main()
 
