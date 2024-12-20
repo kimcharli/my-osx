@@ -160,6 +160,11 @@ poetry new --name projectname --src projectroot
 * Remote Container
 * Remote SSH
 * Python
+* Automator - Quick Action - (files or folders in Finder.app + Run Shell Script - pass input as arguments + save as 'Open VS Code')
+```shell
+for f in "$@"; do open -a 'Visual Studio Code' "$@" ; done
+```
+in ~/Library/Services/Open\ VS\ Code.workflow
 
 === Brew apps
 ----
