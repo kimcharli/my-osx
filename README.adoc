@@ -17,7 +17,7 @@ ckim-mbp:~ ckim$
 - activate touch id
 - create ssh key pair
 ----
-ssh-keygen -b 2048 -t rsa
+ssh-keygen -b 4096 -t rsa
 ----
 - enable passwordless sudo
 ----
@@ -52,7 +52,8 @@ ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
 ** Pocket
 ** Pair Android message with messages.google.com
 
-
+* nix-shell
+** https://github.com/kimcharli/nix
 * Firefox (for proxy)
 * Evernote - keep in dock
 * Homebrew - https://brew.sh/
@@ -66,10 +67,6 @@ ckim-mbp:~ ckim$ tar zxf OneDrive\ -\ Juniper\ Networks\,\ Inc/venv.tgz
 ** AsciiDoc, go, HashiCorp Terraform, Python
 ** GitHub Copilot Nightly + GitHub Copilot Labs
 
-* GNU stow
-```
-brew install stow
-```
 
 Private: https://github.com/kimcharli/ckim-dotfiles
 ```
@@ -102,21 +99,9 @@ curl -L https://iterm2.com/shell_integration/install_shell_integration.sh | bash
 * Kindle
 * Dropbox
 * Google Drive
-* Docker
 ** enable kubernetes
 
-* python poetry
-```bash
-mkdir -p /Users/ckim/Library/Application\ Support/pypoetry/venv/
-curl -sSL https://install.python-poetry.org | sed 's/symlinks=False/symlinks=True/' | python3 -
-```
-
-
-vscode extension: Python Poetry
-
-```bash
-poetry new --name projectname --src projectroot
-```
+* python poetry (depricated in favor of uv)
 
 
 * Start OneDrive
@@ -177,6 +162,7 @@ brew install multipass
 
 === Mac App Store
 * KakaoTalk
+* Display Maid 
 
 == Device Drivers
 
@@ -189,16 +175,8 @@ link:SRV-vSRX[SRX vSRX]
 
 == local httpd
 
-=== terminate and start up
-```bash
-ckim-mbp:my-osx.wiki ckim$ cd docker-compose/all/
-ckim-mbp:all ckim$ docker-compose down
-Stopping all_nginx_1 ... done
-Removing all_nginx_1 ... done
-ckim-mbp:all ckim$ docker-compose up -d
-Creating all_nginx_1 ... done
-ckim-mbp:all ckim$
-```
+=== docker-compose
+* under ~/docker-compose
 
 ### setup markdown reader environment
 
@@ -216,24 +194,4 @@ for <file>.md, create <file>.html from <md-template>.html by replacing <context/
 ## link:vpn-in-centos[vpn in centos]
 
 ## link:ssh-tunnel[ssh tunnel]
-
-## mac docker
-https://docs.docker.com/docker-for-mac/
-
-some commands
-----
-docker -H unix:///var/run/docker.sock ps
-
-curl --unix-socket /var/run/docker.sock http:///localhost/version
-----
-
-tested for https://raw.githubusercontent.com/kimcharli/my-osx/master/terraform/nginx-test/main.tf
-
-////
-:sourcedir: __special
-include::{sourcedir}/md-renderer.html[]
-////
-
-// uri include is not supported - without allow-uri-read
-// include::https://raw.githubusercontent.com/kimcharli/my-osx/master/terraform/nginx-test/main.tf[]
 
